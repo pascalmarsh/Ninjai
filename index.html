@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ninjai — The Home Hub, Reimagined.</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+
+:root {
+  --ikb: #002FA7;
+  --ikb-dark: #001e6e;
+  --ikb-light: #1a4fd4;
+  --cream: #F5F0E8;
+  --cream-dark: #E8E0D0;
+  --white: #ffffff;
+  --near-black: #080808;
+  --mid: #6b6b6b;
+  --light-text: #9a9a9a;
+  --brand-h: 84px;
+  --nav-h: 52px;
+  --total-top: 136px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--near-black);
+  overflow-x: hidden;
+}
+
+/* ─── BRAND BAR ────────────────────────────────────── */
+#brand-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 300;
+  height: var(--brand-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  transition: background 0.4s, border-color 0.4s;
+}
+#brand-bar.dark {
+  background: var(--near-black);
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+.brand-logo {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  color: var(--near-black);
+  user-select: none;
+  transition: color 0.4s;
+}
+#brand-bar.dark .brand-logo { color: var(--white); }
+
+/* ─── NAV ──────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: var(--brand-h);
+  left: 0; right: 0;
+  z-index: 200;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: background 0.4s, border-color 0.4s;
+}
+nav.dark {
+  background: rgba(8,8,8,0.9);
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+.nav-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  color: var(--ikb);
+  text-decoration: none;
+  transition: color 0.4s;
+}
+nav.dark .nav-logo { color: var(--cream); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--near-black);
+  opacity: 0.7;
+  transition: opacity 0.2s, color 0.4s;
+}
+nav.dark .nav-links a { color: var(--white); }
+.nav-links a:hover { opacity: 1; }
+.nav-cta {
+  background: var(--ikb);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, transform 0.2s, opacity 0.3s;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+.nav-cta.show { opacity: 1; pointer-events: all; }
+.nav-cta:hover { background: var(--ikb-light); transform: translateY(-1px); }
+
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+  background: none;
+  border: none;
+}
+.nav-burger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--near-black); border-radius: 2px;
+  transition: transform 0.32s cubic-bezier(0.16,1,0.3,1), opacity 0.25s, background 0.4s;
+}
+nav.dark .nav-burger span { background: var(--white); }
+.nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; }
+.nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  position: fixed;
+  top: var(--total-top);
+  left: 0; right: 0;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 190;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 32px 32px;
+  transform: translateY(-16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.38s cubic-bezier(0.16,1,0.3,1), opacity 0.3s;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+.mobile-menu.open { transform: translateY(0); opacity: 1; pointer-events: all; }
+.mobile-menu a {
+  display: block; padding: 14px 0;
+  font-size: 18px; font-weight: 400;
+  color: var(--near-black); text-decoration: none;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: color 0.2s;
+}
+.mobile-menu a:hover { color: var(--ikb); }
+.mobile-menu .m-cta {
+  display: block; margin-top: 20px;
+  background: var(--ikb); color: white; border: none;
+  padding: 14px; border-radius: 12px;
+  font-size: 16px; font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  text-align: center; cursor: pointer;
+}
+
+/* ─── BUTTONS ──────────────────────────────────────── */
+.btn-primary {
+  background: var(--ikb); color: white; border: none;
+  padding: 14px 32px; border-radius: 100px;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, transform 0.2s;
+}
+.btn-primary:hover { background: var(--ikb-light); transform: translateY(-2px); }
+.btn-ghost {
+  background: transparent; color: var(--ikb);
+  border: 1.5px solid var(--ikb);
+  padding: 14px 32px; border-radius: 100px;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.btn-ghost:hover { background: var(--ikb); color: white; transform: translateY(-2px); }
+
+/* ─── HERO ─────────────────────────────────────────── */
+.hero {
+  min-height: 100vh; min-height: 100svh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: calc(var(--total-top) + 56px) 24px 56px;
+  background: var(--white);
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero-glow {
+  position: absolute; top: -5%; left: 50%;
+  transform: translateX(-50%);
+  width: min(900px, 130vw); height: min(900px, 130vw);
+  background: radial-gradient(ellipse, rgba(0,47,167,0.07) 0%, transparent 60%);
+  pointer-events: none; will-change: transform;
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ikb); margin-bottom: 18px;
+  opacity: 0; animation: hFadeUp 0.8s 0.15s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.hero-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(48px, 10vw, 112px);
+  line-height: 1.0; letter-spacing: -0.025em;
+  color: var(--near-black); margin-bottom: 4px;
+  opacity: 0; animation: hFadeUp 0.9s 0.28s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.hero-title em { font-style: italic; color: var(--ikb); }
+.hero-sub {
+  font-size: clamp(15px, 2.5vw, 19px); font-weight: 300;
+  color: var(--mid); max-width: 420px; line-height: 1.65;
+  margin: 22px auto 36px;
+  opacity: 0; animation: hFadeUp 0.9s 0.42s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.hero-actions {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 60px;
+  opacity: 0; animation: hFadeUp 0.9s 0.54s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.hero-img-wrap {
+  width: clamp(220px, 38vw, 360px);
+  opacity: 0; animation: hScale 1.2s 0.35s cubic-bezier(0.16,1,0.3,1) forwards;
+  will-change: transform; perspective: 800px;
+}
+.hero-img-inner { transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); transform-style: preserve-3d; }
+.hero-img-wrap img {
+  width: 100%;
+  filter: drop-shadow(0 40px 80px rgba(0,47,167,0.18));
+  display: block;
+}
+.scroll-cue {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0; animation: hFadeUp 1s 1.2s forwards;
+}
+.scroll-line {
+  width: 1px; height: 36px;
+  background: linear-gradient(to bottom, var(--ikb), transparent);
+  animation: linePulse 2.2s 1.5s ease-in-out infinite;
+}
+.scroll-text { font-size: 9px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ikb); opacity: 0.55; }
+
+/* ─── VIDEO SECTION ────────────────────────────────── */
+.section-video {
+  background: var(--near-black);
+  padding: clamp(60px, 8vw, 100px) clamp(24px, 5vw, 80px);
+  text-align: center;
+}
+.video-eyebrow {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(255,255,255,0.32); margin-bottom: 16px;
+}
+.video-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(26px, 4vw, 44px);
+  color: var(--white); margin-bottom: 32px;
+  letter-spacing: -0.02em;
+}
+.video-title em { font-style: italic; color: #5580ff; }
+.video-frame {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+}
+.video-frame iframe {
+  width: 100%;
+  aspect-ratio: 16/9;
+  display: block;
+  border: none;
+}
+
+/* ─── SECTION SHARED ───────────────────────────────── */
+.sec-eye {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ikb); margin-bottom: 16px; text-align: center;
+}
+.sec-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(34px, 5.5vw, 62px);
+  line-height: 1.05; letter-spacing: -0.022em;
+  text-align: center; margin-bottom: 52px; color: var(--near-black);
+}
+
+/* ─── CINEMATIC ────────────────────────────────────── */
+.s-cinematic {
+  background: var(--near-black);
+  padding: clamp(80px, 12vw, 160px) clamp(24px, 6vw, 80px);
+  text-align: center; position: relative; overflow: hidden;
+}
+.cin-orb {
+  position: absolute; bottom: -130px; left: 50%;
+  transform: translateX(-50%);
+  width: min(720px, 130vw); height: 500px;
+  background: radial-gradient(ellipse, rgba(0,47,167,0.38) 0%, transparent 68%);
+  pointer-events: none; will-change: transform;
+}
+.cin-eye {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.33); margin-bottom: 24px;
+}
+.cin-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(36px, 7vw, 80px);
+  line-height: 1.05; color: var(--white);
+  margin-bottom: 24px; letter-spacing: -0.022em;
+}
+.cin-title em { font-style: italic; color: #5588ff; }
+.cin-body {
+  font-size: clamp(14px, 2vw, 18px); font-weight: 300;
+  color: rgba(255,255,255,0.42); max-width: 460px;
+  margin: 0 auto; line-height: 1.75;
+}
+
+/* ─── MODELS ───────────────────────────────────────── */
+.s-models { padding: clamp(80px, 10vw, 140px) clamp(16px, 5vw, 48px); background: var(--cream); }
+.models-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 2px; max-width: 1100px; margin: 0 auto;
+  background: var(--cream-dark); border: 2px solid var(--cream-dark);
+}
+.mc {
+  background: var(--white);
+  padding: clamp(22px, 3vw, 38px) clamp(18px, 2.5vw, 26px);
+  display: flex; flex-direction: column; position: relative;
+  transition: transform 0.38s cubic-bezier(0.16,1,0.3,1), box-shadow 0.38s;
+}
+.mc:hover { transform: translateY(-8px); z-index: 2; box-shadow: 0 24px 64px rgba(0,0,0,0.11); }
+.mc.feat { background: var(--ikb); }
+.mc-badge {
+  position: absolute; top: 13px; right: 13px;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
+  background: rgba(0,47,167,0.08); color: var(--ikb);
+}
+.mc.feat .mc-badge { background: rgba(255,255,255,0.15); color: white; }
+.mc-name { font-family: 'DM Serif Display', serif; font-size: clamp(20px, 2.2vw, 26px); margin-bottom: 6px; color: var(--near-black); }
+.mc.feat .mc-name { color: white; }
+.mc-tag { font-size: 12.5px; color: var(--mid); margin-bottom: 22px; font-weight: 300; line-height: 1.4; }
+.mc.feat .mc-tag { color: rgba(255,255,255,0.55); }
+.mc-specs { list-style: none; display: flex; flex-direction: column; gap: 9px; flex: 1; margin-bottom: 22px; }
+.mc-specs li { font-size: 12px; color: var(--mid); display: flex; align-items: flex-start; gap: 8px; line-height: 1.4; }
+.mc.feat .mc-specs li { color: rgba(255,255,255,0.65); }
+.sd { width: 5px; height: 5px; border-radius: 50%; background: var(--ikb); flex-shrink: 0; margin-top: 5px; }
+.mc.feat .sd { background: rgba(255,255,255,0.5); }
+.mc-price { font-family: 'DM Serif Display', serif; font-size: 28px; letter-spacing: -0.02em; margin-bottom: 14px; color: var(--near-black); }
+.mc.feat .mc-price { color: white; }
+.mc-btn {
+  display: block; text-align: center; padding: 11px; border-radius: 8px;
+  font-size: 12.5px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; border: 1.5px solid var(--ikb); color: var(--ikb);
+  background: transparent; transition: background 0.2s, color 0.2s; text-decoration: none;
+}
+.mc-btn:hover { background: var(--ikb); color: white; }
+.mc.feat .mc-btn { border-color: rgba(255,255,255,0.32); color: white; }
+.mc.feat .mc-btn:hover { background: rgba(255,255,255,0.14); }
+
+/* ─── FEATURES ─────────────────────────────────────── */
+.s-features { padding: clamp(80px, 10vw, 140px) clamp(16px, 5vw, 48px); background: var(--white); }
+.feat-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; max-width: 1000px; margin: 0 auto;
+  background: #ddd; border: 2px solid #ddd;
+}
+.fb { background: var(--white); padding: clamp(32px, 5vw, 52px) clamp(26px, 4vw, 48px); overflow: hidden; }
+.fb.dark { background: var(--near-black); }
+.fb.blue { background: var(--ikb); }
+.fb.cream { background: var(--cream); }
+.fb-icon { font-size: 32px; margin-bottom: 18px; display: block; }
+.fb-title { font-family: 'DM Serif Display', serif; font-size: clamp(20px, 2.8vw, 28px); line-height: 1.1; margin-bottom: 12px; color: var(--near-black); }
+.fb.dark .fb-title, .fb.blue .fb-title { color: white; }
+.fb-body { font-size: 13.5px; font-weight: 300; line-height: 1.75; color: var(--mid); }
+.fb.dark .fb-body { color: rgba(255,255,255,0.45); }
+.fb.blue .fb-body { color: rgba(255,255,255,0.6); }
+.fb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+.ft { font-size: 11px; font-weight: 500; letter-spacing: 0.05em; padding: 5px 11px; border-radius: 100px; background: rgba(0,47,167,0.08); color: var(--ikb); }
+.fb.blue .ft { background: rgba(255,255,255,0.13); color: white; }
+.fb.dark .ft { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.62); }
+
+/* ─── LIGHT ────────────────────────────────────────── */
+.s-light {
+  padding: clamp(100px, 14vw, 200px) clamp(24px, 6vw, 80px);
+  background: var(--near-black); text-align: center; position: relative; overflow: hidden;
+}
+.l-orb {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(640px, 110vw); height: min(640px, 110vw); border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,240,232,0.12) 0%, rgba(245,240,232,0.025) 48%, transparent 70%);
+  animation: luxPulse 5s ease-in-out infinite; pointer-events: none;
+}
+.l-title { font-family: 'DM Serif Display', serif; font-size: clamp(40px, 9vw, 96px); line-height: 1.04; color: var(--cream); position: relative; z-index: 1; letter-spacing: -0.025em; margin-bottom: 20px; }
+.l-body { font-size: clamp(14px, 2vw, 17px); font-weight: 300; color: rgba(245,240,232,0.4); max-width: 380px; margin: 0 auto 56px; line-height: 1.75; position: relative; z-index: 1; }
+.lux-wrap { position: relative; z-index: 1; }
+.lux-num { font-family: 'DM Serif Display', serif; font-size: clamp(56px, 14vw, 120px); color: var(--cream); line-height: 1; margin-bottom: 10px; letter-spacing: -0.03em; }
+.lux-lbl { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,232,0.28); }
+
+/* ─── ADD-ONS ──────────────────────────────────────── */
+.s-addons { padding: clamp(80px, 10vw, 140px) clamp(16px, 5vw, 48px); background: var(--cream); }
+.addons-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 900px; margin: 0 auto; }
+.ac { background: white; padding: clamp(22px, 3vw, 34px) clamp(18px, 2.5vw, 26px); border-radius: 16px; transition: transform 0.38s cubic-bezier(0.16,1,0.3,1), box-shadow 0.38s; }
+.ac:hover { transform: translateY(-6px); box-shadow: 0 20px 56px rgba(0,0,0,0.09); }
+.ac-icon { font-size: 26px; margin-bottom: 14px; display: block; }
+.ac-name { font-family: 'DM Serif Display', serif; font-size: 19px; margin-bottom: 8px; }
+.ac-desc { font-size: 13px; font-weight: 300; color: var(--mid); line-height: 1.65; margin-bottom: 14px; }
+.ac-price { font-size: 13.5px; font-weight: 500; color: var(--ikb); }
+
+/* ─── PHILOSOPHY ───────────────────────────────────── */
+.s-phil-wrap { padding: clamp(80px, 10vw, 140px) clamp(24px, 6vw, 80px); background: var(--white); }
+.s-phil { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 7vw, 100px); align-items: center; max-width: 1100px; margin: 0 auto; }
+.phil-eye { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ikb); margin-bottom: 18px; }
+.phil-title { font-family: 'DM Serif Display', serif; font-size: clamp(30px, 4.5vw, 50px); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; }
+.phil-body { font-size: 14.5px; font-weight: 300; line-height: 1.8; color: var(--mid); margin-bottom: 14px; }
+.phil-vis { background: var(--ikb); aspect-ratio: 1; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: clamp(44px, 7vw, 80px); color: rgba(255,255,255,0.65); font-family: serif; position: relative; overflow: hidden; }
+.phil-vis::before { content: ''; position: absolute; top: -30%; right: -30%; width: 80%; height: 80%; border-radius: 50%; background: rgba(255,255,255,0.05); }
+.phil-vis span { position: relative; z-index: 1; }
+
+/* ─── OPEN SOURCE ──────────────────────────────────── */
+.s-open { padding: clamp(80px, 10vw, 140px) clamp(24px, 6vw, 80px); background: var(--near-black); text-align: center; }
+.open-title { font-family: 'DM Serif Display', serif; font-size: clamp(36px, 6vw, 70px); line-height: 1.05; color: var(--white); margin-bottom: 20px; letter-spacing: -0.022em; }
+.open-body { font-size: clamp(14px, 2vw, 17px); font-weight: 300; color: rgba(255,255,255,0.4); max-width: 420px; margin: 0 auto 48px; line-height: 1.75; }
+.pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 48px; }
+.pill { display: flex; align-items: center; gap: 7px; padding: 9px 17px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); font-size: 12.5px; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.04); transition: border-color 0.2s, background 0.2s; }
+.pill:hover { border-color: rgba(255,255,255,0.24); background: rgba(255,255,255,0.08); }
+.pdot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── FINAL CTA ────────────────────────────────────── */
+.s-final { padding: clamp(100px, 14vw, 180px) clamp(24px, 6vw, 80px); background: var(--cream); text-align: center; }
+.final-title { font-family: 'DM Serif Display', serif; font-size: clamp(42px, 9vw, 104px); line-height: 1.0; letter-spacing: -0.03em; color: var(--near-black); margin-bottom: 36px; }
+.final-title em { font-style: italic; color: var(--ikb); }
+.final-acts { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ─── FOOTER ───────────────────────────────────────── */
+footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: flex; justify-content: space-between; align-items: center; background: var(--white); flex-wrap: wrap; gap: 12px; }
+.f-logo { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--ikb); }
+.f-copy { font-size: 12px; color: var(--light-text); }
+.f-links { display: flex; gap: 20px; list-style: none; }
+.f-links a { font-size: 12px; color: var(--light-text); text-decoration: none; transition: color 0.2s; }
+.f-links a:hover { color: var(--near-black); }
+
+/* ─── SCROLL ANIMATIONS ────────────────────────────── */
+.rv { opacity: 0; transform: translateY(38px); transition: opacity 0.88s cubic-bezier(0.16,1,0.3,1), transform 0.88s cubic-bezier(0.16,1,0.3,1); }
+.rv.in { opacity: 1; transform: none; }
+.rv-l { opacity: 0; transform: translateX(-42px); transition: opacity 0.88s cubic-bezier(0.16,1,0.3,1), transform 0.88s cubic-bezier(0.16,1,0.3,1); }
+.rv-l.in { opacity: 1; transform: none; }
+.rv-r { opacity: 0; transform: translateX(42px); transition: opacity 0.88s cubic-bezier(0.16,1,0.3,1), transform 0.88s cubic-bezier(0.16,1,0.3,1); }
+.rv-r.in { opacity: 1; transform: none; }
+.d1{transition-delay:0.08s}.d2{transition-delay:0.18s}.d3{transition-delay:0.28s}.d4{transition-delay:0.38s}.d5{transition-delay:0.48s}
+
+/* ─── KEYFRAMES ────────────────────────────────────── */
+@keyframes hFadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+@keyframes hScale { from{opacity:0;transform:scale(0.88) translateY(28px)} to{opacity:1;transform:scale(1) translateY(0)} }
+@keyframes linePulse { 0%,100%{transform:scaleY(1);opacity:0.45} 50%{transform:scaleY(1.18);opacity:1} }
+@keyframes luxPulse { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.65} 50%{transform:translate(-50%,-50%) scale(1.1);opacity:1} }
+
+/* ─── RESPONSIVE ───────────────────────────────────── */
+@media (max-width: 900px) {
+  :root { --brand-h: 64px; --total-top: 116px; }
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .nav-cta { display: none !important; }
+  .nav-burger { display: flex; }
+  .models-grid { grid-template-columns: 1fr 1fr; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .s-phil { grid-template-columns: 1fr; }
+  .phil-vis { max-width: 280px; margin: 0 auto; }
+}
+@media (max-width: 580px) {
+  :root { --brand-h: 56px; --nav-h: 48px; --total-top: 104px; }
+  nav { padding: 0 20px; }
+  .models-grid { grid-template-columns: 1fr; }
+  .mc:hover { transform: none; }
+  .addons-grid { grid-template-columns: 1fr; }
+  .feat-grid { background: none; border: none; gap: 10px; }
+  .fb { border-radius: 14px; }
+  footer { flex-direction: column; align-items: flex-start; padding: 22px 20px; }
+  .f-links { flex-wrap: wrap; gap: 14px; }
+}
+@media (max-width: 380px) {
+  .hero-actions, .final-acts { flex-direction: column; align-items: center; }
+}
+@media (hover: none) {
+  .mc:hover, .ac:hover { transform: none; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- BRAND BAR -->
+<div id="brand-bar">
+  <div class="brand-logo">MM</div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#">Ninjai</a>
+  <ul class="nav-links">
+    <li><a href="#film">Film</a></li>
+    <li><a href="#models">Models</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#light">Light</a></li>
+    <li><a href="#addons">Accessories</a></li>
+    <li><a href="#open">Open Source</a></li>
+  </ul>
+  <button class="nav-cta" id="nav-cta">Order Now</button>
+  <button class="nav-burger" id="burger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mob-menu">
+  <a href="#film"     class="mlink">Film</a>
+  <a href="#models"   class="mlink">Models</a>
+  <a href="#features" class="mlink">Features</a>
+  <a href="#light"    class="mlink">Light</a>
+  <a href="#addons"   class="mlink">Accessories</a>
+  <a href="#open"     class="mlink">Open Source</a>
+  <button class="m-cta">Order Now</button>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-glow" id="hGlow"></div>
+  <p class="hero-eyebrow">Introducing Ninjai</p>
+  <h1 class="hero-title">The home hub,<br><em>reimagined.</em></h1>
+  <p class="hero-sub">A sculptural object that thinks like a system. Screenless. Open. Yours.</p>
+  <div class="hero-actions">
+    <button class="btn-primary">Explore Models</button>
+    <button class="btn-ghost" onclick="document.getElementById('film').scrollIntoView({behavior:'smooth'})">Watch Film</button>
+  </div>
+  <div class="hero-img-wrap" id="hImg">
+    <div class="hero-img-inner" id="hImgInner">
+      <img src="images/ninjai-hero.jpeg" alt="Ninjai smart home hub">
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</section>
+
+<!-- VIDEO / FILM SECTION -->
+<section class="section-video" id="film">
+  <p class="video-eyebrow rv">A Ninjai film</p>
+  <h2 class="video-title rv d1">Experience it<br><em>in motion.</em></h2>
+  <div class="video-frame rv d2">
+    <iframe src="ninjai-film.html" title="Ninjai Product Film" allowfullscreen></iframe>
+  </div>
+</section>
+
+<!-- CINEMATIC -->
+<section class="s-cinematic">
+  <div class="cin-orb" id="cinOrb"></div>
+  <p class="cin-eye rv">Design Philosophy</p>
+  <h2 class="cin-title rv d1">Looks like <em>art.</em><br>Thinks like a system.</h2>
+  <p class="cin-body rv d2">Handcrafted origami paper shade. Klein Blue ceramic base. An acoustic chamber within. Ninjai orchestrates every ecosystem — without belonging to any of them.</p>
+</section>
+
+<!-- MODELS -->
+<section class="s-models" id="models">
+  <p class="sec-eye rv">The lineup</p>
+  <h2 class="sec-title rv d1">Four models.<br>One philosophy.</h2>
+  <div class="models-grid">
+    <div class="mc rv d1">
+      <span class="mc-badge">Entry</span>
+      <div class="mc-name">Ninjai</div>
+      <div class="mc-tag">The essential hub.</div>
+      <ul class="mc-specs">
+        <li><span class="sd"></span>2GB RAM · 16GB storage</li>
+        <li><span class="sd"></span>Matter, HomeKit, Android</li>
+        <li><span class="sd"></span>Built-in speaker · 20W</li>
+        <li><span class="sd"></span>2× USB-C · 1× USB-A</li>
+        <li><span class="sd"></span>Wi-Fi 6 mesh node</li>
+        <li><span class="sd"></span>Full lux control</li>
+      </ul>
+      <div class="mc-price">€299</div>
+      <a href="#" class="mc-btn">Learn more →</a>
+    </div>
+    <div class="mc feat rv d2">
+      <span class="mc-badge">Popular</span>
+      <div class="mc-name">Ninjai +</div>
+      <div class="mc-tag">More memory. More intelligence.</div>
+      <ul class="mc-specs">
+        <li><span class="sd"></span>8GB RAM · 64GB storage</li>
+        <li><span class="sd"></span>On-device AI engine</li>
+        <li><span class="sd"></span>Enhanced speaker · 40W</li>
+        <li><span class="sd"></span>4× USB-C · 2× USB-A</li>
+        <li><span class="sd"></span>Wi-Fi 6E mesh node</li>
+        <li><span class="sd"></span>Precision lux calibration</li>
+      </ul>
+      <div class="mc-price">€499</div>
+      <a href="#" class="mc-btn">Learn more →</a>
+    </div>
+    <div class="mc rv d3">
+      <span class="mc-badge">Audio</span>
+      <div class="mc-name">Woofer</div>
+      <div class="mc-tag">For those who feel music.</div>
+      <ul class="mc-specs">
+        <li><span class="sd"></span>8GB RAM · 64GB storage</li>
+        <li><span class="sd"></span>On-device AI engine</li>
+        <li><span class="sd"></span>100W deep bass driver</li>
+        <li><span class="sd"></span>4× USB-C · 2× USB-A</li>
+        <li><span class="sd"></span>Acoustic chamber tuned</li>
+        <li><span class="sd"></span>Speaker expansion port</li>
+      </ul>
+      <div class="mc-price">€699</div>
+      <a href="#" class="mc-btn">Learn more →</a>
+    </div>
+    <div class="mc rv d4">
+      <span class="mc-badge">Pro</span>
+      <div class="mc-name">Cinema</div>
+      <div class="mc-tag">Fill the room. Fill the moment.</div>
+      <ul class="mc-specs">
+        <li><span class="sd"></span>16GB RAM · 256GB storage</li>
+        <li><span class="sd"></span>Advanced AI engine</li>
+        <li><span class="sd"></span>8-channel surround · 100W+</li>
+        <li><span class="sd"></span>6× USB-C · 2× USB-A</li>
+        <li><span class="sd"></span>Wi-Fi 7 mesh anchor</li>
+        <li><span class="sd"></span>HDMI eARC out</li>
+      </ul>
+      <div class="mc-price">€999</div>
+      <a href="#" class="mc-btn">Learn more →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="s-features" id="features">
+  <p class="sec-eye rv">What's inside</p>
+  <h2 class="sec-title rv d1">Built around<br>your life.</h2>
+  <div class="feat-grid">
+    <div class="fb blue rv-l d1">
+      <span class="fb-icon">🔓</span>
+      <div class="fb-title">Open by design.</div>
+      <p class="fb-body">Built on open-source foundations. Mod it. Extend it. Fork it. No cloud keys required to access your own home.</p>
+      <div class="fb-tags"><span class="ft">GitHub</span><span class="ft">Matter 1.3</span><span class="ft">HAOS</span></div>
+    </div>
+    <div class="fb cream rv-r d2">
+      <span class="fb-icon">🏠</span>
+      <div class="fb-title">Every platform. One place.</div>
+      <p class="fb-body">HomeKit, Google Home, Alexa, Matter — Ninjai sits above the ecosystem wars, bridging everything without picking a side.</p>
+      <div class="fb-tags"><span class="ft">HomeKit</span><span class="ft">Google</span><span class="ft">Alexa</span><span class="ft">Matter</span></div>
+    </div>
+    <div class="fb rv-l d2">
+      <span class="fb-icon">🔊</span>
+      <div class="fb-title">Sound that fills the room.</div>
+      <p class="fb-body">From ambient audio to room-shaking low end. The internal acoustic chamber is precision-tuned. Woofer reaches 100W. Cinema goes full surround.</p>
+    </div>
+    <div class="fb dark rv-r d3">
+      <span class="fb-icon">🧠</span>
+      <div class="fb-title">On-device intelligence.</div>
+      <p class="fb-body">The AI engine in Ninjai + and above runs locally. Your automations, routines, and patterns — processed privately, without a cloud subscription.</p>
+      <div class="fb-tags"><span class="ft">Private</span><span class="ft">Local LLM</span><span class="ft">No subscription</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- LIGHT -->
+<section class="s-light" id="light">
+  <div class="l-orb"></div>
+  <p class="cin-eye rv" style="color:rgba(245,240,232,0.32);">Lighting</p>
+  <h2 class="l-title rv d1">Light as medicine.</h2>
+  <p class="l-body rv d2">Control every parameter — lux, lumen, colour temperature, circadian rhythm. Add the Ninjai Daylight Kit for therapeutic-grade illumination.</p>
+  <div class="lux-wrap rv d3">
+    <div class="lux-num" id="luxNum">0</div>
+    <div class="lux-lbl">Lux — with Daylight Kit add-on</div>
+  </div>
+</section>
+
+<!-- ADD-ONS -->
+<section class="s-addons" id="addons">
+  <p class="sec-eye rv">Expand further</p>
+  <h2 class="sec-title rv d1">Made for<br>the curious.</h2>
+  <div class="addons-grid">
+    <div class="ac rv d1">
+      <span class="ac-icon">☀️</span>
+      <div class="ac-name">Daylight Kit</div>
+      <p class="ac-desc">10,000 lux SAD therapy attachment. Seasonal, circadian, programmable. Mounts directly to the origami shade.</p>
+      <div class="ac-price">From €129</div>
+    </div>
+    <div class="ac rv d2">
+      <span class="ac-icon">🔉</span>
+      <div class="ac-name">Satellite Speaker</div>
+      <p class="ac-desc">Pair up to 6 wireless satellites with any Ninjai. Expand your listening space, one room at a time.</p>
+      <div class="ac-price">From €99 each</div>
+    </div>
+    <div class="ac rv d3">
+      <span class="ac-icon">🧩</span>
+      <div class="ac-name">Hub Expansion Module</div>
+      <p class="ac-desc">Add Zigbee, Z-Wave, or additional USB-C ports. Snap-fit modular slot. No tools required.</p>
+      <div class="ac-price">From €49</div>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="s-phil-wrap">
+  <div class="s-phil">
+    <div class="rv-l">
+      <p class="phil-eye">The object</p>
+      <h2 class="phil-title">Crafted,<br>not manufactured.</h2>
+      <p class="phil-body">The origami shade is hand-folded from precision-cut paper — each pleat deliberate, each fold a quiet nod to Japanese paper craft. The base is ceramic, finished in International Klein Blue.</p>
+      <p class="phil-body">Ninjai is the only smart home hub you'd display like a Noguchi lamp.</p>
+    </div>
+    <div class="phil-vis rv-r d2"><span>折り紙</span></div>
+  </div>
+</section>
+
+<!-- OPEN SOURCE -->
+<section class="s-open" id="open">
+  <p class="cin-eye rv" style="color:rgba(255,255,255,0.3)">For builders</p>
+  <h2 class="open-title rv d1">Your home.<br>Your rules.</h2>
+  <p class="open-body rv d2">Ninjai runs open, community-maintained firmware. No vendor lock. No monthly fee. No one watching. Just a very beautiful piece of hardware doing exactly what you tell it to.</p>
+  <div class="pills rv d3">
+    <div class="pill"><span class="pdot" style="background:#FF9F0A"></span>HomeKit</div>
+    <div class="pill"><span class="pdot" style="background:#4285F4"></span>Google Home</div>
+    <div class="pill"><span class="pdot" style="background:#FF9900"></span>Alexa</div>
+    <div class="pill"><span class="pdot" style="background:#00B388"></span>Matter</div>
+    <div class="pill"><span class="pdot" style="background:#41BDF5"></span>Home Assistant</div>
+    <div class="pill"><span class="pdot" style="background:#aaa"></span>Open Source</div>
+  </div>
+  <button class="btn-primary rv d4" style="font-family:'DM Sans',sans-serif;">View on GitHub</button>
+</section>
+
+<!-- FINAL CTA -->
+<section class="s-final">
+  <h2 class="final-title rv">Your home deserves<br><em>better.</em></h2>
+  <div class="final-acts rv d2">
+    <button class="btn-primary">Order Ninjai</button>
+    <button class="btn-ghost">Compare Models</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Ninjai</div>
+  <div class="f-copy">© 2026 Ninjai. The home hub, reimagined.</div>
+  <ul class="f-links">
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Terms</a></li>
+    <li><a href="#">Press</a></li>
+    <li><a href="#">GitHub</a></li>
+  </ul>
+</footer>
+
+<script>
+(function(){
+  const nav      = document.getElementById('nav');
+  const brandBar = document.getElementById('brand-bar');
+  const navCta   = document.getElementById('nav-cta');
+  const burger   = document.getElementById('burger');
+  const mobMenu  = document.getElementById('mob-menu');
+  const hImg     = document.getElementById('hImg');
+  const hImgInner= document.getElementById('hImgInner');
+  const hGlow    = document.getElementById('hGlow');
+  const cinOrb   = document.getElementById('cinOrb');
+  const luxNum   = document.getElementById('luxNum');
+  const heroSec  = document.getElementById('hero');
+  const prefRM   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const darkSecs = document.querySelectorAll('.s-cinematic, .s-light, .s-open, .section-video');
+
+  function updateNav() {
+    const nb = nav.getBoundingClientRect().bottom;
+    let dark = false;
+    darkSecs.forEach(s => {
+      const r = s.getBoundingClientRect();
+      if (r.top < nb && r.bottom > 0) dark = true;
+    });
+    nav.classList.toggle('dark', dark);
+    brandBar.classList.toggle('dark', dark);
+
+    const ha = document.querySelector('.hero-actions');
+    if (ha) navCta.classList.toggle('show', ha.getBoundingClientRect().bottom < 0);
+  }
+
+  function closeMob() {
+    burger.classList.remove('open');
+    mobMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  burger.addEventListener('click', () => {
+    const o = mobMenu.classList.toggle('open');
+    burger.classList.toggle('open', o);
+    document.body.style.overflow = o ? 'hidden' : '';
+  });
+  document.querySelectorAll('.mlink, .m-cta').forEach(el => el.addEventListener('click', closeMob));
+
+  /* Scroll reveal */
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, { threshold: 0.07, rootMargin: '0px 0px -44px 0px' });
+  document.querySelectorAll('.rv, .rv-l, .rv-r').forEach(el => obs.observe(el));
+
+  /* Lux counter */
+  let luxDone = false;
+  const luxObs = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting || luxDone) return;
+    luxDone = true;
+    const t0 = performance.now();
+    (function step(now) {
+      const p = Math.min((now - t0) / 1800, 1);
+      const e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      luxNum.textContent = Math.round(e * 10000).toLocaleString();
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }, { threshold: 0.5 });
+  if (luxNum) luxObs.observe(luxNum);
+
+  /* Parallax */
+  let tX = 0, tY = 0, sY = 0, raf = false;
+  function applyTransform() {
+    if (hImg && !prefRM) hImg.style.transform = `translateY(${sY * 0.22}px)`;
+    if (hImgInner && !prefRM) hImgInner.style.transform = `rotateY(${tX}deg) rotateX(${tY}deg)`;
+  }
+  window.addEventListener('scroll', () => {
+    sY = window.scrollY;
+    if (hGlow && !prefRM) hGlow.style.transform = `translateX(-50%) translateY(${sY * 0.09}px)`;
+    if (cinOrb && !prefRM) {
+      const r = cinOrb.parentElement.getBoundingClientRect();
+      cinOrb.style.transform = `translateX(-50%) translateY(${-r.top * 0.13}px)`;
+    }
+    if (!raf) { raf = true; requestAnimationFrame(() => { applyTransform(); updateNav(); raf = false; }); }
+  }, { passive: true });
+
+  if (!prefRM && heroSec) {
+    heroSec.addEventListener('mousemove', e => {
+      if (window.innerWidth < 768) return;
+      const r = heroSec.getBoundingClientRect();
+      tX = ((e.clientX - (r.left + r.width/2)) / r.width) * 7;
+      tY = -((e.clientY - (r.top + r.height/2)) / r.height) * 5;
+      if (!raf) { raf = true; requestAnimationFrame(() => { applyTransform(); raf = false; }); }
+    });
+    heroSec.addEventListener('mouseleave', () => { tX = 0; tY = 0; applyTransform(); });
+  }
+
+  updateNav();
+})();
+</script>
+</body>
+</html>
