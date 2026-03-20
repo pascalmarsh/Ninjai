@@ -342,6 +342,156 @@ nav.dark .nav-title { color: var(--white); }
 .order-sub { font-size: 16px; font-weight: 300; color: rgba(255,255,255,0.4); max-width: 400px; margin: 0 auto 40px; line-height: 1.7; }
 .order-price { font-family: 'DM Serif Display', serif; font-size: clamp(40px,7vw,80px); color: var(--white); letter-spacing: -0.03em; margin-bottom: 32px; }
 
+/* ─── EXPLODED VIEW SECTION ──────────── */
+.s-exploded {
+  background: #030810;
+  position: relative;
+}
+
+/* Sticky scroll container — Apple Mac Pro style */
+.exploded-sticky-wrap {
+  position: relative;
+  /* Height = number of components × scroll distance per step */
+  height: 600vh;
+}
+
+.exploded-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Left: the drawing */
+.exploded-canvas {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, 90vw);
+  height: min(600px, 90vh);
+}
+
+/* Right: callout text panel */
+.exploded-callout {
+  position: absolute;
+  right: clamp(24px, 6vw, 80px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(200px, 28vw, 320px);
+  pointer-events: none;
+}
+
+.callout-step {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.callout-step.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.callout-num {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: #4a7aff; margin-bottom: 10px;
+}
+.callout-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(20px, 2.8vw, 28px);
+  color: var(--white); line-height: 1.1;
+  letter-spacing: -0.01em; margin-bottom: 12px;
+}
+.callout-body {
+  font-size: 13px; font-weight: 300;
+  color: rgba(255,255,255,0.45); line-height: 1.7;
+}
+.callout-spec {
+  margin-top: 14px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.callout-spec-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 5px;
+}
+.callout-spec-row span:first-child { font-size: 11px; color: rgba(255,255,255,0.3); }
+.callout-spec-row span:last-child  { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.7); }
+
+/* Progress dots on left */
+.exploded-dots {
+  position: absolute;
+  left: clamp(24px, 4vw, 48px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ex-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: background 0.3s, transform 0.3s;
+}
+.ex-dot.active {
+  background: #4a7aff;
+  transform: scale(1.4);
+}
+
+/* Section header */
+.exploded-header {
+  position: absolute;
+  top: calc(var(--total-top) + 24px);
+  left: 0; right: 0;
+  text-align: center;
+  pointer-events: none;
+  z-index: 10;
+}
+.exploded-header-eye {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+}
+
+/* Scroll hint */
+.scroll-hint-ex {
+  position: absolute;
+  bottom: 28px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  animation: scrollHintFade 2s ease-in-out infinite;
+}
+@keyframes scrollHintFade { 0%,100%{opacity:0.3} 50%{opacity:0.8} }
+
+/* Mobile: stack vertically */
+@media (max-width: 700px) {
+  .exploded-callout {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    top: auto;
+    bottom: clamp(24px, 5vw, 48px);
+    width: 90vw;
+    text-align: center;
+  }
+  .exploded-dots { display: none; }
+  .exploded-canvas {
+    top: 40%;
+    width: min(340px, 88vw);
+    height: min(400px, 55vh);
+  }
+}
+
 /* ─── FOOTER ─────────────────────────── */
 footer {
   padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07);
@@ -789,6 +939,346 @@ footer {
   </div>
 </section>
 
+<!-- EXPLODED ISOMETRIC VIEW -->
+<section class="s-exploded" id="exploded">
+  <div class="exploded-sticky-wrap" id="explodedWrap">
+    <div class="exploded-sticky" id="explodedSticky">
+
+      <!-- Section label -->
+      <div class="exploded-header">
+        <p class="exploded-header-eye">Inside the Woofer</p>
+      </div>
+
+      <!-- Progress dots -->
+      <div class="exploded-dots" id="exDots">
+        <div class="ex-dot active"></div>
+        <div class="ex-dot"></div>
+        <div class="ex-dot"></div>
+        <div class="ex-dot"></div>
+        <div class="ex-dot"></div>
+        <div class="ex-dot"></div>
+        <div class="ex-dot"></div>
+      </div>
+
+      <!-- THE ISOMETRIC DRAWING -->
+      <div class="exploded-canvas">
+        <svg id="explodedSvg" viewBox="0 0 520 580" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;overflow:visible;">
+          <defs>
+            <!-- Blueprint grid -->
+            <pattern id="bpGrid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(74,122,255,0.06)" stroke-width="0.5"/>
+            </pattern>
+            <!-- Glow filter -->
+            <filter id="exGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="exGlow2" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="6" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <!-- Dashed line style -->
+            <style>
+              .bp-line { stroke: rgba(74,122,255,0.35); stroke-width: 1; fill: none; }
+              .bp-line-bright { stroke: rgba(74,122,255,0.8); stroke-width: 1.2; fill: none; }
+              .bp-line-dim { stroke: rgba(74,122,255,0.15); stroke-width: 0.7; fill: none; }
+              .bp-face { fill: rgba(10,20,60,0.7); stroke: rgba(74,122,255,0.3); stroke-width: 0.8; }
+              .bp-face-top { fill: rgba(20,40,100,0.5); stroke: rgba(74,122,255,0.4); stroke-width: 0.8; }
+              .bp-face-side { fill: rgba(5,15,50,0.8); stroke: rgba(74,122,255,0.2); stroke-width: 0.6; }
+              .bp-highlight { stroke: rgba(74,122,255,1); stroke-width: 1.8; fill: none; filter: url(#exGlow); }
+              .bp-callout-line { stroke: rgba(74,122,255,0.5); stroke-width: 0.7; stroke-dasharray: 3,2; fill: none; }
+              .bp-label { font-family: 'DM Sans', sans-serif; font-size: 8.5px; fill: rgba(74,122,255,0.6); letter-spacing: 0.05em; }
+              .bp-label-bright { font-family: 'DM Sans', sans-serif; font-size: 8.5px; fill: rgba(74,122,255,1); letter-spacing: 0.05em; font-weight: 500; }
+              .comp-group { transition: opacity 0.6s ease, transform 0.6s ease; }
+            </style>
+          </defs>
+
+          <!-- Blueprint grid background -->
+          <rect width="520" height="580" fill="url(#bpGrid)" opacity="0.5"/>
+
+          <!--
+            ISOMETRIC PROJECTION
+            Isometric: x-axis goes right at 30°, y-axis goes left at 30°, z-axis goes up
+            For a pyramid frustum:
+            - Base: 32cm × 20cm footprint
+            - Top: 11cm × 7cm footprint
+            - Height: 36cm
+            Scale: 1cm = 7px
+            Isometric conversion:
+              screenX = (x - y) * cos(30°) = (x-y) * 0.866
+              screenY = (x + y) * sin(30°) - z = (x+y) * 0.5 - z
+            Origin: centre of drawing at (260, 480) — base sits at bottom
+          -->
+
+          <!-- ═══ COMPONENT GROUPS ═══════════════════════════ -->
+          <!-- Each group gets an id and is positioned at its exploded offset -->
+          <!-- In exploded view, components drift apart along the z-axis -->
+
+          <!-- 1. ORIGAMI SHADE (floats above) -->
+          <g id="comp-shade" class="comp-group" transform="translate(0,0)">
+            <!-- Shade: elliptical form, top view isometric -->
+            <!-- Centre at (260, 80) when fully exploded -->
+            <ellipse cx="260" cy="95" rx="110" ry="42" class="bp-face-top" stroke-dasharray="4,2"/>
+            <!-- Shade ribs (origami folds) — radial lines -->
+            <g opacity="0.5">
+              <line x1="260" y1="53" x2="260" y2="137" class="bp-line-dim"/>
+              <line x1="200" y1="62" x2="320" y2="128" class="bp-line-dim"/>
+              <line x1="172" y1="95" x2="348" y2="95" class="bp-line-dim"/>
+              <line x1="200" y1="128" x2="320" y2="62" class="bp-line-dim"/>
+              <line x1="230" y1="55" x2="290" y2="135" class="bp-line-dim"/>
+              <line x1="290" y1="55" x2="230" y2="135" class="bp-line-dim"/>
+            </g>
+            <!-- Shade outer ellipse bright -->
+            <ellipse cx="260" cy="95" rx="110" ry="42" fill="none" stroke="rgba(74,122,255,0.5)" stroke-width="1.2" stroke-dasharray="5,3"/>
+            <!-- Inner ring -->
+            <ellipse cx="260" cy="95" rx="18" ry="7" class="bp-line" stroke-dasharray="3,2"/>
+            <!-- Drop lines to neck -->
+            <line x1="242" y1="95" x2="242" y2="168" class="bp-line-dim" stroke-dasharray="3,4"/>
+            <line x1="278" y1="95" x2="278" y2="168" class="bp-line-dim" stroke-dasharray="3,4"/>
+            <text x="374" y="92" class="bp-label">Origami paper shade</text>
+            <text x="374" y="103" class="bp-label">Hand-folded washi</text>
+            <line x1="370" y1="95" x2="345" y2="95" class="bp-callout-line"/>
+          </g>
+
+          <!-- 2. SHADE NECK MOUNT -->
+          <g id="comp-neck" class="comp-group" transform="translate(0,0)">
+            <rect x="242" y="168" width="36" height="22" rx="3" class="bp-face" stroke-dasharray="none"/>
+            <!-- Isometric top face of neck -->
+            <path d="M 242,168 L 260,158 L 278,168" class="bp-face-top"/>
+            <path d="M 278,168 L 278,190 L 260,180 L 242,190 L 242,168" class="bp-face"/>
+            <!-- Cable channel -->
+            <line x1="258" y1="168" x2="258" y2="190" class="bp-line-dim"/>
+            <line x1="262" y1="168" x2="262" y2="190" class="bp-line-dim"/>
+            <text x="374" y="174" class="bp-label">Ceramic neck mount</text>
+            <text x="374" y="184" class="bp-label">Cable channel · WiFi antenna</text>
+            <line x1="370" y1="178" x2="290" y2="178" class="bp-callout-line"/>
+          </g>
+
+          <!-- 3. ELECTRONICS BAY (top of enclosure) -->
+          <g id="comp-electronics" class="comp-group" transform="translate(0,0)">
+            <!-- Top plate of enclosure -->
+            <!-- Isometric box: 11cm × 7cm × 4cm = 77px × 49px × 28px -->
+            <!-- Centred at x=260, top at y=200 -->
+            <!-- Isometric top face: parallelogram -->
+            <path d="M 220,215 L 260,195 L 300,215 L 260,235 Z" class="bp-face-top"/>
+            <!-- Front face -->
+            <path d="M 220,215 L 220,243 L 260,263 L 260,235 Z" class="bp-face-side"/>
+            <!-- Right face -->
+            <path d="M 260,235 L 260,263 L 300,243 L 300,215 Z" class="bp-face"/>
+            <!-- PCB outline inside -->
+            <path d="M 228,220 L 252,208 L 292,220 L 268,232 Z" fill="none" stroke="rgba(74,122,255,0.2)" stroke-width="0.6" stroke-dasharray="2,2"/>
+            <!-- Chip squares -->
+            <rect x="240" y="214" width="8" height="6" fill="rgba(74,122,255,0.12)" stroke="rgba(74,122,255,0.3)" stroke-width="0.5" transform="rotate(-15,244,217)"/>
+            <rect x="255" y="210" width="6" height="5" fill="rgba(74,122,255,0.08)" stroke="rgba(74,122,255,0.25)" stroke-width="0.5" transform="rotate(-15,258,212)"/>
+            <!-- Vertical lines (traces) -->
+            <line x1="232" y1="228" x2="228" y2="240" class="bp-line-dim"/>
+            <line x1="240" y1="230" x2="236" y2="242" class="bp-line-dim"/>
+            <text x="374" y="220" class="bp-label">Electronics bay</text>
+            <text x="374" y="230" class="bp-label">CPU · WiFi 6E · Bluetooth</text>
+            <text x="374" y="240" class="bp-label">Acoustically isolated</text>
+            <line x1="370" y1="228" x2="302" y2="228" class="bp-callout-line"/>
+          </g>
+
+          <!-- 4. CERAMIC ENCLOSURE BODY -->
+          <g id="comp-body" class="comp-group" transform="translate(0,0)">
+            <!--
+              Isometric frustum pyramid:
+              Base: 32×20 at y=490. Top: 11×7 at y=265
+              Using simplified isometric faces
+            -->
+            <!-- FRONT-LEFT FACE (front-facing, wide taper) -->
+            <path d="M 170,450 L 220,263 L 260,263 L 234,450 Z" class="bp-face-side"/>
+            <!-- FRONT-RIGHT FACE -->
+            <path d="M 234,450 L 260,263 L 300,263 L 350,450 Z" class="bp-face"/>
+            <!-- BOTTOM FACE (base) -->
+            <path d="M 170,450 L 234,450 L 350,450 L 350,490 L 170,490 Z" class="bp-face-top" opacity="0.4"/>
+            <!-- TOP EDGE (ceramic shelf separator) -->
+            <path d="M 220,263 L 260,243 L 300,263 L 260,283 Z" class="bp-face-top" opacity="0.6"/>
+            <!-- Wall thickness lines on top -->
+            <line x1="223" y1="265" x2="262" y2="246" class="bp-line-dim"/>
+            <line x1="298" y1="265" x2="258" y2="246" class="bp-line-dim"/>
+            <!-- Internal cavity outline (dashed) -->
+            <path d="M 180,445 L 226,274 L 256,274 L 230,445 Z" fill="none" stroke="rgba(74,122,255,0.12)" stroke-width="0.7" stroke-dasharray="3,3"/>
+            <path d="M 230,445 L 256,274 L 294,274 L 344,445 Z" fill="none" stroke="rgba(74,122,255,0.12)" stroke-width="0.7" stroke-dasharray="3,3"/>
+            <!-- Bracing ribs (3 horizontal) -->
+            <line x1="176" y1="403" x2="346" y2="403" class="bp-line-dim" stroke-dasharray="5,3"/>
+            <line x1="183" y1="355" x2="340" y2="355" class="bp-line-dim" stroke-dasharray="5,3"/>
+            <line x1="192" y1="307" x2="332" y2="307" class="bp-line-dim" stroke-dasharray="5,3"/>
+            <!-- Rib labels -->
+            <text x="102" y="406" class="bp-label" text-anchor="end">Rib 1</text>
+            <text x="102" y="358" class="bp-label" text-anchor="end">Rib 2</text>
+            <text x="102" y="310" class="bp-label" text-anchor="end">Rib 3</text>
+            <line x1="104" y1="403" x2="176" y2="403" class="bp-callout-line"/>
+            <line x1="104" y1="355" x2="183" y2="355" class="bp-callout-line"/>
+            <line x1="104" y1="307" x2="192" y2="307" class="bp-callout-line"/>
+            <!-- Main callout -->
+            <text x="374" y="365" class="bp-label">18mm stoneware walls</text>
+            <text x="374" y="375" class="bp-label">Cobalt IKB glaze · 1280°C</text>
+            <text x="374" y="385" class="bp-label">3 integral bracing ribs</text>
+            <line x1="370" y1="373" x2="350" y2="373" class="bp-callout-line"/>
+          </g>
+
+          <!-- 5. ACTIVE DRIVER (front face) -->
+          <g id="comp-driver" class="comp-group" transform="translate(0,0)">
+            <!-- Driver shown on front-left face, centred vertically -->
+            <!-- Driver centre approx at (200, 360) on the front face -->
+            <!-- Circle for driver cone -->
+            <ellipse cx="195" cy="356" rx="32" ry="20" class="bp-face" stroke="rgba(74,122,255,0.6)" stroke-width="1.2"/>
+            <!-- Surround ring -->
+            <ellipse cx="195" cy="356" rx="28" ry="17" fill="none" stroke="rgba(74,122,255,0.4)" stroke-width="0.8"/>
+            <!-- Voice coil -->
+            <ellipse cx="195" cy="356" rx="10" ry="6" fill="none" stroke="rgba(74,122,255,0.55)" stroke-width="1"/>
+            <!-- Dust cap -->
+            <ellipse cx="195" cy="356" rx="5" ry="3" fill="rgba(74,122,255,0.08)" stroke="rgba(74,122,255,0.4)" stroke-width="0.7"/>
+            <!-- Spider/suspension lines -->
+            <ellipse cx="195" cy="356" rx="18" ry="11" fill="none" stroke="rgba(74,122,255,0.2)" stroke-width="0.6" stroke-dasharray="2,2"/>
+            <!-- Magnet outline (behind) -->
+            <ellipse cx="206" cy="358" rx="20" ry="12" fill="rgba(5,10,30,0.8)" stroke="rgba(74,122,255,0.25)" stroke-width="0.7"/>
+            <!-- Glow highlight on driver -->
+            <ellipse cx="195" cy="356" rx="32" ry="20" fill="none" stroke="rgba(74,122,255,0.9)" stroke-width="1.5" filter="url(#exGlow)"/>
+            <!-- Callout -->
+            <text x="78" y="340" class="bp-label" text-anchor="end">8-inch driver</text>
+            <text x="78" y="350" class="bp-label" text-anchor="end">100W RMS</text>
+            <text x="78" y="360" class="bp-label" text-anchor="end">Front-firing</text>
+            <line x1="80" y1="352" x2="163" y2="352" class="bp-callout-line"/>
+          </g>
+
+          <!-- 6. PASSIVE RADIATOR (rear face) -->
+          <g id="comp-pr" class="comp-group" transform="translate(0,0)">
+            <!-- PR on right face, same height as driver -->
+            <ellipse cx="326" cy="356" rx="32" ry="20" class="bp-face" stroke="rgba(74,122,255,0.55)" stroke-width="1.1"/>
+            <ellipse cx="326" cy="356" rx="26" ry="16" fill="none" stroke="rgba(74,122,255,0.35)" stroke-width="0.8"/>
+            <!-- Mass disk -->
+            <ellipse cx="326" cy="356" rx="10" ry="6" fill="rgba(74,122,255,0.12)" stroke="rgba(74,122,255,0.6)" stroke-width="1"/>
+            <!-- Suspension -->
+            <ellipse cx="326" cy="356" rx="18" ry="11" fill="none" stroke="rgba(74,122,255,0.18)" stroke-width="0.6" stroke-dasharray="2,2"/>
+            <!-- Glow -->
+            <ellipse cx="326" cy="356" rx="32" ry="20" fill="none" stroke="rgba(74,122,255,0.8)" stroke-width="1.5" filter="url(#exGlow)"/>
+            <!-- Callout -->
+            <text x="374" y="340" class="bp-label">8-inch passive radiator</text>
+            <text x="374" y="350" class="bp-label">Tunable mass disk</text>
+            <text x="374" y="360" class="bp-label">Rear-firing · Fb = 40Hz</text>
+            <line x1="370" y1="352" x2="358" y2="352" class="bp-callout-line"/>
+          </g>
+
+          <!-- 7. CONNECTIVITY (ports at base) -->
+          <g id="comp-ports" class="comp-group" transform="translate(0,0)">
+            <!-- Port strip on right face near base -->
+            <!-- USB-C ports -->
+            <rect x="292" y="430" width="10" height="6" rx="1.5" fill="rgba(74,122,255,0.08)" stroke="rgba(74,122,255,0.6)" stroke-width="0.9"/>
+            <rect x="306" y="430" width="10" height="6" rx="1.5" fill="rgba(74,122,255,0.08)" stroke="rgba(74,122,255,0.5)" stroke-width="0.8"/>
+            <rect x="320" y="430" width="10" height="6" rx="1.5" fill="rgba(74,122,255,0.08)" stroke="rgba(74,122,255,0.5)" stroke-width="0.8"/>
+            <rect x="334" y="430" width="10" height="6" rx="1.5" fill="rgba(74,122,255,0.08)" stroke="rgba(74,122,255,0.5)" stroke-width="0.8"/>
+            <!-- USB-A -->
+            <rect x="287" y="440" width="14" height="8" rx="1" fill="rgba(74,122,255,0.05)" stroke="rgba(74,122,255,0.4)" stroke-width="0.7"/>
+            <rect x="305" y="440" width="14" height="8" rx="1" fill="rgba(74,122,255,0.05)" stroke="rgba(74,122,255,0.4)" stroke-width="0.7"/>
+            <!-- Power input -->
+            <circle cx="332" cy="444" r="4" fill="rgba(74,122,255,0.05)" stroke="rgba(74,122,255,0.4)" stroke-width="0.7"/>
+            <!-- Glow on ports -->
+            <rect x="285" y="428" width="62" height="24" rx="2" fill="none" stroke="rgba(74,122,255,0.7)" stroke-width="1.2" filter="url(#exGlow)"/>
+            <!-- Callout -->
+            <text x="374" y="432" class="bp-label">4× USB-C (3.2 Gen 2)</text>
+            <text x="374" y="442" class="bp-label">2× USB-A · Power in</text>
+            <text x="374" y="452" class="bp-label">Speaker expansion jack</text>
+            <line x1="370" y1="440" x2="348" y2="440" class="bp-callout-line"/>
+          </g>
+
+          <!-- ACOUSTIC WAVE FIELD (inside cavity, always subtle) -->
+          <g id="wave-field" opacity="0.08">
+            <ellipse cx="260" cy="360" rx="50" ry="30" fill="none" stroke="#4a7aff" stroke-width="0.8" stroke-dasharray="4,3"/>
+            <ellipse cx="260" cy="360" rx="70" ry="42" fill="none" stroke="#4a7aff" stroke-width="0.6" stroke-dasharray="3,4"/>
+            <ellipse cx="260" cy="360" rx="90" ry="54" fill="none" stroke="#4a7aff" stroke-width="0.5" stroke-dasharray="3,5"/>
+          </g>
+
+          <!-- OVERALL OUTLINE (always visible) -->
+          <g id="comp-outline" opacity="0.3">
+            <path d="M 170,490 L 170,450 L 220,263 L 300,263 L 350,450 L 350,490 Z"
+                  fill="none" stroke="rgba(74,122,255,0.4)" stroke-width="0.8" stroke-dasharray="6,3"/>
+          </g>
+
+        </svg>
+      </div>
+
+      <!-- Callout text panels -->
+      <div class="exploded-callout" id="explodedCallout">
+        <div class="callout-step visible" data-step="0">
+          <div class="callout-num">01 — Overview</div>
+          <div class="callout-title">Seven components.<br>One object.</div>
+          <div class="callout-body">The Ninjai Woofer is an engineered acoustic system disguised as a lamp. Scroll to explore each layer — from the origami shade to the port connectors at the base.</div>
+        </div>
+        <div class="callout-step" data-step="1">
+          <div class="callout-num">02 — Origami Shade</div>
+          <div class="callout-title">Hand-folded.<br>Acoustically transparent.</div>
+          <div class="callout-body">Washi paper, folded over a wire frame. The folds allow sound from the electronics neck to pass through without obstruction. The shade is the only component that doesn't affect the acoustic chamber.</div>
+          <div class="callout-spec">
+            <div class="callout-spec-row"><span>Material</span><span>Washi paper</span></div>
+            <div class="callout-spec-row"><span>Fold technique</span><span>Hand-folded</span></div>
+            <div class="callout-spec-row"><span>Light transmission</span><span>~60%</span></div>
+          </div>
+        </div>
+        <div class="callout-step" data-step="2">
+          <div class="callout-num">03 — Electronics Bay</div>
+          <div class="callout-title">Sealed above.<br>Silent below.</div>
+          <div class="callout-body">The top section of the ceramic enclosure houses all electronics — CPU, WiFi 6E, Bluetooth, and the 100W Class D amplifier. A ceramic shelf seals it from the acoustic chamber. Electronics never touch the sound.</div>
+          <div class="callout-spec">
+            <div class="callout-spec-row"><span>Processor</span><span>Quad-core ARM</span></div>
+            <div class="callout-spec-row"><span>Wireless</span><span>WiFi 6E · BT 5.3</span></div>
+            <div class="callout-spec-row"><span>Amp class</span><span>Class D · 100W</span></div>
+          </div>
+        </div>
+        <div class="callout-step" data-step="3">
+          <div class="callout-num">04 — Ceramic Body</div>
+          <div class="callout-title">Fired at 1280°C.<br>Acoustically inert.</div>
+          <div class="callout-body">High-fire stoneware with three integral bracing ribs cast into the mould. The walls ring at frequencies above the audio band — the enclosure adds zero coloration. At 100W, the ceramic stays completely rigid while wood would flex.</div>
+          <div class="callout-spec">
+            <div class="callout-spec-row"><span>Wall thickness</span><span>18mm</span></div>
+            <div class="callout-spec-row"><span>Firing temp</span><span>1280°C</span></div>
+            <div class="callout-spec-row"><span>Glaze</span><span>Cobalt IKB</span></div>
+            <div class="callout-spec-row"><span>Internal volume</span><span>7.5 litres</span></div>
+          </div>
+        </div>
+        <div class="callout-step" data-step="4">
+          <div class="callout-num">05 — Active Driver</div>
+          <div class="callout-title">100W. Front-firing.<br>20cm cone.</div>
+          <div class="callout-body">An 8-inch long-throw woofer sits flush in the front face. The ceramic mounting surface is rigid enough to prevent the driver from rocking — a common failure mode in MDF cabinets at high power. The voice coil and magnet assembly are rated for continuous 100W operation.</div>
+          <div class="callout-spec">
+            <div class="callout-spec-row"><span>Diameter</span><span>20cm / 8-inch</span></div>
+            <div class="callout-spec-row"><span>Power (RMS)</span><span>100W</span></div>
+            <div class="callout-spec-row"><span>Sensitivity</span><span>90dB / W / m</span></div>
+            <div class="callout-spec-row"><span>Qts</span><span>0.3 – 0.4</span></div>
+          </div>
+        </div>
+        <div class="callout-step" data-step="5">
+          <div class="callout-num">06 — Passive Radiator</div>
+          <div class="callout-title">Rear-firing.<br>Tuned to 40Hz.</div>
+          <div class="callout-body">A second 8-inch cone on the rear face — no magnet, no motor. It responds to the internal air pressure created by the active driver, radiating bass in all directions. The ceramic mass disk bolted to the cone is calibrated at manufacture to tune the system to exactly 40Hz.</div>
+          <div class="callout-spec">
+            <div class="callout-spec-row"><span>Type</span><span>Passive radiator</span></div>
+            <div class="callout-spec-row"><span>Tuning freq</span><span>40 Hz</span></div>
+            <div class="callout-spec-row"><span>F3 point</span><span>~35 Hz</span></div>
+            <div class="callout-spec-row"><span>Direction</span><span>Rear-omnidirectional</span></div>
+          </div>
+        </div>
+        <div class="callout-step" data-step="6">
+          <div class="callout-num">07 — Connectivity</div>
+          <div class="callout-title">Everything.<br>At the base.</div>
+          <div class="callout-body">All ports are recessed into the rear face near the base — invisible from the front, accessible from behind. Four USB-C ports handle data and power delivery simultaneously. The speaker expansion jack connects satellite speakers with a single cable.</div>
+          <div class="callout-spec">
+            <div class="callout-spec-row"><span>USB-C</span><span>4× USB 3.2 Gen 2</span></div>
+            <div class="callout-spec-row"><span>USB-A</span><span>2× USB 3.0</span></div>
+            <div class="callout-spec-row"><span>Power in</span><span>100–240V</span></div>
+            <div class="callout-spec-row"><span>Speaker out</span><span>3.5mm expansion</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll hint -->
+      <div class="scroll-hint-ex" id="exScrollHint">Scroll to explore</div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ORDER -->
 <section class="s-order">
   <p class="drawing-eye rv">Ready to order</p>
@@ -862,7 +1352,111 @@ footer {
   }, { passive:true });
   logo.addEventListener('mouseenter', () => { hoverActive=true; if (mmState!=='loop') mmSet('loop'); });
   logo.addEventListener('mouseleave', () => { hoverActive=false; if (mmState==='loop'&&!scrollActive) mmSet('slow'); });
-})();
-</script>
+  /* ── EXPLODED ISOMETRIC SCROLL ─────────────────────── */
+  (function() {
+    const wrap    = document.getElementById('explodedWrap');
+    const sticky  = document.getElementById('explodedSticky');
+    const svg     = document.getElementById('explodedSvg');
+    const dots    = document.querySelectorAll('.ex-dot');
+    const steps   = document.querySelectorAll('.callout-step');
+    const hint    = document.getElementById('exScrollHint');
+    if (!wrap) return;
+
+    // Component groups and their exploded offsets
+    // Each step reveals one component by translating it to its exploded position
+    const TOTAL_STEPS = 7;
+
+    // Define exploded Y offsets for each component at each step
+    // [step0_offset, step1_offset, ...] — how far component floats up
+    const components = [
+      { id: 'comp-shade',       baseY:   0, explodeY: -80  },
+      { id: 'comp-neck',        baseY:   0, explodeY: -55  },
+      { id: 'comp-electronics', baseY:   0, explodeY: -30  },
+      { id: 'comp-body',        baseY:   0, explodeY:   0  },
+      { id: 'comp-driver',      baseY:   0, explodeY:   0  },
+      { id: 'comp-pr',          baseY:   0, explodeY:   0  },
+      { id: 'comp-ports',       baseY:   0, explodeY:   0  },
+    ];
+
+    const compEls = components.map(c => document.getElementById(c.id));
+
+    function lerp(a, b, t) { return a + (b - a) * Math.max(0, Math.min(1, t)); }
+
+    function onScroll() {
+      if (!wrap) return;
+      const rect    = wrap.getBoundingClientRect();
+      const total   = wrap.offsetHeight - window.innerHeight;
+      const scrolled = -rect.top;
+      const progress = Math.max(0, Math.min(1, scrolled / total));
+      const stepF   = progress * (TOTAL_STEPS - 1);
+      const stepI   = Math.floor(stepF);
+      const stepFrac = stepF - stepI;
+
+      // Update active step
+      const activeStep = Math.round(stepF);
+      dots.forEach((d, i) => d.classList.toggle('active', i === activeStep));
+      steps.forEach((s, i) => s.classList.toggle('visible', i === activeStep));
+
+      // Hide scroll hint after user starts scrolling
+      if (scrolled > 50) hint.style.opacity = '0';
+      else hint.style.opacity = '1';
+
+      // Animate each component
+      // As user scrolls through step N, component N floats up to exploded position
+      // All previously-stepped components stay at exploded
+      // Component N+1 onwards stay at base (not yet revealed)
+
+      compEls.forEach((el, i) => {
+        if (!el) return;
+        const comp = components[i];
+
+        // Step threshold for this component: it starts moving at step i
+        const compStep = i;
+        let t = 0;
+        if (stepF >= compStep + 1) {
+          t = 1; // fully exploded
+        } else if (stepF >= compStep) {
+          t = stepF - compStep; // transitioning
+        } else {
+          t = 0; // not yet
+        }
+
+        const ty = lerp(0, comp.explodeY, t);
+
+        // Also fade in when first revealed
+        const opacity = compStep === 0 ? 1 : Math.min(1, (stepF - (compStep - 0.5)) * 2);
+        el.style.transform = `translateY(${ty}px)`;
+        el.style.opacity   = Math.max(0.15, opacity).toString();
+
+        // Highlight active component
+        const isActive = (activeStep === compStep);
+        const lineEls  = el.querySelectorAll('.bp-callout-line');
+        const labelEls = el.querySelectorAll('.bp-label');
+        lineEls.forEach(l => {
+          l.style.stroke = isActive ? 'rgba(74,122,255,0.8)' : 'rgba(74,122,255,0.35)';
+        });
+        labelEls.forEach(l => {
+          l.style.fill = isActive ? 'rgba(74,122,255,0.9)' : 'rgba(74,122,255,0.45)';
+        });
+      });
+
+      // Pulse wave field opacity with scroll
+      const wf = document.getElementById('wave-field');
+      if (wf) {
+        const wfOpacity = 0.05 + (Math.sin(progress * Math.PI * 4) + 1) * 0.04;
+        wf.style.opacity = wfOpacity.toString();
+      }
+
+      // Dark nav when in exploded section
+      const secRect = document.getElementById('exploded').getBoundingClientRect();
+      if (secRect.top < 0 && secRect.bottom > 0) {
+        document.getElementById('nav').classList.add('dark');
+        document.getElementById('brand-bar').classList.add('dark');
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // init
+  })();
 </body>
 </html>
