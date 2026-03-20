@@ -233,17 +233,135 @@ nav.dark .nav-burger span { background: var(--white); }
   margin-bottom: 60px;
   opacity: 0; animation: hFadeUp 0.9s 0.54s cubic-bezier(0.16,1,0.3,1) forwards;
 }
-.hero-img-wrap {
-  width: clamp(220px, 38vw, 360px);
-  opacity: 0; animation: hScale 1.2s 0.35s cubic-bezier(0.16,1,0.3,1) forwards;
-  will-change: transform; perspective: 800px;
+/* ─── HERO CAROUSEL ─────────────────────────────────── */
+.hero-carousel {
+  position: relative;
+  width: clamp(260px, 52vw, 560px);
+  opacity: 0;
+  animation: hScale 1.2s 0.35s cubic-bezier(0.16,1,0.3,1) forwards;
 }
-.hero-img-inner { transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); transform-style: preserve-3d; }
-.hero-img-wrap img {
-  width: 100%;
-  filter: drop-shadow(0 40px 80px rgba(0,47,167,0.18));
+.carousel-track {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,47,167,0.16), 0 8px 24px rgba(0,0,0,0.1);
+  background: var(--cream-dark);
+  aspect-ratio: 4/3;
+}
+.carousel-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.4,0,0.2,1);
+  pointer-events: none;
+}
+.carousel-slide.active {
+  opacity: 1;
+  pointer-events: all;
+}
+.carousel-slide img {
+  width: 100%; height: 100%;
+  object-fit: cover;
   display: block;
+  transform: scale(1.03);
+  transition: transform 6s ease-in-out;
 }
+.carousel-slide.active img {
+  transform: scale(1.0);
+}
+/* Graphic placeholder slides */
+.carousel-slide.graphic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+.carousel-slide.graphic.s-blue { background: var(--ikb); }
+.carousel-slide.graphic.s-dark { background: var(--near-black); }
+.cs-label {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(255,255,255,0.38); margin-bottom: 16px;
+}
+.cs-headline {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(22px, 4vw, 38px);
+  line-height: 1.05; letter-spacing: -0.02em;
+  color: var(--white); margin-bottom: 14px;
+}
+.cs-headline em { font-style: italic; color: #6699ff; }
+.cs-body {
+  font-size: clamp(12px, 1.5vw, 14px); font-weight: 300;
+  color: rgba(255,255,255,0.45); line-height: 1.65;
+  max-width: 280px;
+}
+.cs-stat {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(48px, 8vw, 80px);
+  line-height: 1; letter-spacing: -0.04em;
+  color: var(--white); margin-bottom: 8px;
+}
+.cs-stat-label {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+/* Carousel controls */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+.cdot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(0,47,167,0.2);
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+  border: none; padding: 0;
+}
+.cdot.active {
+  background: var(--ikb);
+  transform: scale(1.35);
+}
+.carousel-progress {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.6);
+  width: 0%;
+  z-index: 10;
+  transition: none;
+}
+.carousel-arrows {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.carousel-track:hover .carousel-arrows { opacity: 1; }
+.c-arrow {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: all;
+  transition: background 0.2s, transform 0.2s;
+  font-size: 14px;
+  color: var(--near-black);
+}
+.c-arrow:hover { background: white; transform: scale(1.08); }
 .scroll-cue {
   position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -281,12 +399,70 @@ nav.dark .nav-burger span { background: var(--white); }
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+  cursor: pointer;
 }
-.video-frame iframe {
+/* Poster / placeholder */
+.video-poster {
+  position: relative;
   width: 100%;
   aspect-ratio: 16/9;
+  overflow: hidden;
+}
+.video-poster img {
+  width: 100%; height: 100%;
+  object-fit: cover;
   display: block;
-  border: none;
+  transition: transform 0.6s ease;
+  transform: scale(1.02);
+}
+.video-frame:hover .video-poster img { transform: scale(1.06); }
+.video-poster-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(0,0,0,0.1) 0%,
+    rgba(0,0,0,0.45) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.video-play-btn {
+  width: clamp(56px, 8vw, 76px);
+  height: clamp(56px, 8vw, 76px);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), background 0.2s;
+  cursor: pointer; border: none;
+}
+.video-frame:hover .video-play-btn {
+  transform: scale(1.1);
+  background: white;
+}
+.play-tri {
+  width: 0; height: 0;
+  border-top: clamp(9px,1.5vw,13px) solid transparent;
+  border-bottom: clamp(9px,1.5vw,13px) solid transparent;
+  border-left: clamp(14px,2.3vw,20px) solid var(--near-black);
+  margin-left: 3px;
+}
+.video-poster-label {
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+/* Film iframe — hidden until play is clicked */
+.video-iframe-wrap {
+  display: none;
+  width: 100%;
+  aspect-ratio: 16/9;
+}
+.video-iframe-wrap iframe {
+  width: 100%; height: 100%;
+  display: block; border: none;
 }
 
 /* ─── SECTION SHARED ───────────────────────────────── */
@@ -485,6 +661,7 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
   .feat-grid { grid-template-columns: 1fr; }
   .s-phil { grid-template-columns: 1fr; }
   .phil-vis { max-width: 280px; margin: 0 auto; }
+  .hero-carousel { width: clamp(260px, 80vw, 480px); }
 }
 @media (max-width: 580px) {
   :root { --brand-h: 56px; --nav-h: 48px; --total-top: 104px; }
@@ -496,12 +673,162 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
   .fb { border-radius: 14px; }
   footer { flex-direction: column; align-items: flex-start; padding: 22px 20px; }
   .f-links { flex-wrap: wrap; gap: 14px; }
+  .hero-carousel { width: 90vw; }
+  .carousel-arrows { display: none; }
 }
 @media (max-width: 380px) {
   .hero-actions, .final-acts { flex-direction: column; align-items: center; }
 }
 @media (hover: none) {
   .mc:hover, .ac:hover { transform: none; box-shadow: none; }
+  .carousel-arrows { opacity: 1; }
+}
+/* ─── HISTORY / TIMELINE ───────────────────────────── */
+.s-history {
+  padding: clamp(80px, 10vw, 140px) 0;
+  background: var(--white);
+  overflow: hidden;
+}
+.history-header {
+  text-align: center;
+  padding: 0 clamp(24px, 6vw, 80px);
+  margin-bottom: 80px;
+}
+.history-intro {
+  font-size: clamp(14px, 2vw, 17px);
+  font-weight: 300;
+  color: var(--mid);
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* Timeline spine */
+.timeline {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 60px);
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--cream-dark) 8%, var(--cream-dark) 92%, transparent);
+  transform: translateX(-50%);
+}
+
+/* Each event */
+.tl-event {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 0;
+  margin-bottom: 72px;
+  position: relative;
+}
+.tl-event:last-child { margin-bottom: 0; }
+
+/* Date node in centre */
+.tl-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+.tl-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--cream-dark);
+  flex-shrink: 0;
+  transition: border-color 0.4s, background 0.4s;
+  margin-top: 4px;
+}
+.tl-event.in .tl-dot {
+  border-color: var(--ikb);
+  background: var(--ikb);
+}
+.tl-date {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--light-text);
+  text-align: center;
+  line-height: 1.3;
+  transition: color 0.4s;
+}
+.tl-event.in .tl-date { color: var(--ikb); }
+
+/* Left / right content */
+.tl-left { padding-right: 36px; text-align: right; }
+.tl-right { padding-left: 36px; text-align: left; }
+.tl-empty { }
+
+.tl-card {
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.tl-left .tl-card { transform: translateX(-28px); }
+.tl-right .tl-card { transform: translateX(28px); }
+.tl-event.in .tl-card { opacity: 1; transform: translateX(0); }
+
+.tl-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+.tl-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(18px, 2.5vw, 22px);
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  color: var(--near-black);
+}
+.tl-body {
+  font-size: 13.5px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--mid);
+}
+
+/* Mobile timeline — single column */
+@media (max-width: 700px) {
+  .timeline::before { left: 24px; }
+  .tl-event {
+    grid-template-columns: 48px 1fr;
+    grid-template-rows: auto;
+  }
+  .tl-node {
+    grid-column: 1;
+    grid-row: 1;
+    align-items: flex-start;
+    padding-top: 4px;
+  }
+  .tl-left {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: left;
+    padding-right: 0;
+    padding-left: 16px;
+  }
+  .tl-right {
+    grid-column: 2;
+    grid-row: 1;
+    padding-left: 16px;
+  }
+  .tl-empty { display: none; }
+  .tl-left .tl-card { transform: translateX(16px); }
+  .tl-right .tl-card { transform: translateX(16px); }
+  .tl-event.in .tl-card { transform: translateX(0); }
 }
 </style>
 </head>
@@ -521,6 +848,7 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
     <li><a href="#features">Features</a></li>
     <li><a href="#light">Light</a></li>
     <li><a href="#addons">Accessories</a></li>
+    <li><a href="#history">History</a></li>
     <li><a href="#open">Open Source</a></li>
   </ul>
   <button class="nav-cta" id="nav-cta">Order Now</button>
@@ -535,6 +863,7 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
   <a href="#features" class="mlink">Features</a>
   <a href="#light"    class="mlink">Light</a>
   <a href="#addons"   class="mlink">Accessories</a>
+  <a href="#history"  class="mlink">History</a>
   <a href="#open"     class="mlink">Open Source</a>
   <button class="m-cta">Order Now</button>
 </div>
@@ -549,9 +878,32 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
     <button class="btn-primary">Explore Models</button>
     <button class="btn-ghost" onclick="document.getElementById('film').scrollIntoView({behavior:'smooth'})">Watch Film</button>
   </div>
-  <div class="hero-img-wrap" id="hImg">
-    <div class="hero-img-inner" id="hImgInner">
-      <img src="ninjai-hero.jpeg" alt="Ninjai smart home hub">
+  <!-- HERO CAROUSEL -->
+  <div class="hero-carousel" id="heroCarousel">
+    <div class="carousel-track" id="carouselTrack">
+      <div class="carousel-slide active" id="slide0">
+        <img src="images/ninjai-room-3.jpeg" alt="Ninjai in context">
+      </div>
+      <div class="carousel-slide" id="slide1">
+        <img src="images/ninjai-glow-2.jpeg" alt="Ninjai glowing warm">
+      </div>
+      <div class="carousel-slide" id="slide2">
+        <img src="images/ninjai-table-lit.jpeg" alt="Ninjai on side table">
+      </div>
+      <div class="carousel-slide" id="slide3">
+        <img src="images/ninjai-real.jpeg" alt="Ninjai Klein Blue edition">
+      </div>
+      <div class="carousel-progress" id="cProgress"></div>
+      <div class="carousel-arrows">
+        <button class="c-arrow" id="cPrev">&#8592;</button>
+        <button class="c-arrow" id="cNext">&#8594;</button>
+      </div>
+    </div>
+    <div class="carousel-dots" id="cDots">
+      <button class="cdot active"></button>
+      <button class="cdot"></button>
+      <button class="cdot"></button>
+      <button class="cdot"></button>
     </div>
   </div>
   <div class="scroll-cue">
@@ -564,8 +916,21 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
 <section class="section-video" id="film">
   <p class="video-eyebrow rv">A Ninjai film</p>
   <h2 class="video-title rv d1">Experience it<br><em>in motion.</em></h2>
-  <div class="video-frame rv d2">
-    <iframe src="ninjai-film.html" title="Ninjai Product Film" allowfullscreen></iframe>
+  <div class="video-frame rv d2" id="videoFrame">
+    <!-- Poster / placeholder -->
+    <div class="video-poster" id="videoPoster">
+      <img src="images/ninjai-glow-1.jpeg" alt="Ninjai product film">
+      <div class="video-poster-overlay">
+        <button class="video-play-btn" id="videoPlayBtn">
+          <div class="play-tri"></div>
+        </button>
+        <p class="video-poster-label">Watch Film</p>
+      </div>
+    </div>
+    <!-- Film loads on click -->
+    <div class="video-iframe-wrap" id="videoIframe">
+      <iframe src="" data-src="ninjai-film.html" title="Ninjai Product Film" allowfullscreen></iframe>
+    </div>
   </div>
 </section>
 
@@ -752,6 +1117,181 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
   </div>
 </section>
 
+<!-- HISTORY TIMELINE -->
+<section class="s-history" id="history">
+  <div class="history-header">
+    <p class="sec-eye rv">The story</p>
+    <h2 class="sec-title rv d1" style="margin-bottom:20px">From idea<br>to object.</h2>
+    <p class="history-intro rv d2">Ninjai began as a form study on a workbench in Donegal. These are the real moments — unfiltered, unpolished — of how a home hub became something worth looking at.</p>
+  </div>
+
+  <div class="timeline">
+
+    <!-- Event 1: The base is born -->
+    <div class="tl-event" data-tl>
+      <div class="tl-left">
+        <div class="tl-card">
+          <img class="tl-img" src="images/ninjai-base-bare-1.jpeg" alt="Bare base prototype">
+          <div class="tl-title">The base.</div>
+          <p class="tl-body">Before the shade, before the name — just the form. A ceramic pyramid, hand-finished, sitting naked under a bare bulb. The geometry felt right immediately.</p>
+        </div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Winter<br>2023</div>
+      </div>
+      <div class="tl-empty"></div>
+    </div>
+
+    <!-- Event 2: Base study 2 -->
+    <div class="tl-event" data-tl>
+      <div class="tl-empty"></div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Winter<br>2023</div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <img class="tl-img" src="images/ninjai-base-bare-2.jpeg" alt="Base form study">
+          <div class="tl-title">Form study.</div>
+          <p class="tl-body">Iterating on the base profile. The truncated pyramid — wider at the base, tapering to the bulb socket — emerged as the defining silhouette. Stable, sculptural, functional.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event 3: First shade attempt -->
+    <div class="tl-event" data-tl>
+      <div class="tl-left">
+        <div class="tl-card">
+          <img class="tl-img" src="images/ninjai-proto-base-1.jpeg" alt="First shade prototype">
+          <div class="tl-title">First shade.</div>
+          <p class="tl-body">The origami shade arrives — but doesn't sit right yet. The shade is tilted, the proportions slightly off. An honest prototype moment. The paper folding technique was already beautiful though.</p>
+        </div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Early<br>2024</div>
+      </div>
+      <div class="tl-empty"></div>
+    </div>
+
+    <!-- Event 4: Refined, lit -->
+    <div class="tl-event" data-tl>
+      <div class="tl-empty"></div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Spring<br>2024</div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <img class="tl-img" src="images/ninjai-room-2.jpeg" alt="Ninjai refined and lit">
+          <div class="tl-title">It works.</div>
+          <p class="tl-body">The shade centres, the proportions resolve. Switched on for the first time in a real room — the warm paper glow through the origami folds is exactly what was imagined.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event 5: Room context -->
+    <div class="tl-event" data-tl>
+      <div class="tl-left">
+        <div class="tl-card">
+          <img class="tl-img" src="images/ninjai-room-1.jpeg" alt="Ninjai in bedroom context">
+          <div class="tl-title">Living with it.</div>
+          <p class="tl-body">Moved into the bedroom. Living alongside other objects — a mid-century cabinet, zebra-print drawers, art. Ninjai holds its own. It doesn't compete. It belongs.</p>
+        </div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Summer<br>2024</div>
+      </div>
+      <div class="tl-empty"></div>
+    </div>
+
+    <!-- Event 6: Wide room shot -->
+    <div class="tl-event" data-tl>
+      <div class="tl-empty"></div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Summer<br>2024</div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <img class="tl-img" src="images/ninjai-room-wide.jpeg" alt="Ninjai in wider room context">
+          <div class="tl-title">In the room.</div>
+          <p class="tl-body">Seen at a distance for the first time, alongside the floor lamp and star lights. The mushroom silhouette reads from across the room. It's unmistakable.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event 7: On side table -->
+    <div class="tl-event" data-tl>
+      <div class="tl-left">
+        <div class="tl-card">
+          <img class="tl-img" src="images/ninjai-table-lit.jpeg" alt="Ninjai on side table">
+          <div class="tl-title">Finding its table.</div>
+          <p class="tl-body">Testing placement on a wire side table. The close-up shade detail — lit from within — reveals the full depth of the origami fold geometry. Each pleat a deliberate decision.</p>
+        </div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Autumn<br>2024</div>
+      </div>
+      <div class="tl-empty"></div>
+    </div>
+
+    <!-- Event 8: Dramatic glow -->
+    <div class="tl-event" data-tl>
+      <div class="tl-empty"></div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Autumn<br>2024</div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <img class="tl-img" src="images/ninjai-glow-1.jpeg" alt="Ninjai dramatic glow">
+          <div class="tl-title">The glow.</div>
+          <p class="tl-body">Low light, warm room. The lamp becomes the room's anchor — not just a light source but a presence. This is what Ninjai is for: setting the atmosphere, not just the scene.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event 9: Klein Blue -->
+    <div class="tl-event" data-tl>
+      <div class="tl-left">
+        <div class="tl-card">
+          <img class="tl-img" src="images/ninjai-real.jpeg" alt="Ninjai Klein Blue edition">
+          <div class="tl-title">International Klein Blue.</div>
+          <p class="tl-body">The decision to paint the base in IKB — Yves Klein's registered pigment — transforms it from prototype to object. The ceramic absorbs the colour like nothing else. The Ninjai identity crystallises.</p>
+        </div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Winter<br>2024</div>
+      </div>
+      <div class="tl-empty"></div>
+    </div>
+
+    <!-- Event 10: Website launch -->
+    <div class="tl-event" data-tl>
+      <div class="tl-empty"></div>
+      <div class="tl-node">
+        <div class="tl-dot"></div>
+        <div class="tl-date">March<br>2026</div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-img" style="background:var(--ikb);display:flex;align-items:center;justify-content:center;border-radius:12px;">
+            <span style="font-family:'DM Serif Display',serif;font-size:clamp(32px,6vw,56px);color:rgba(255,255,255,0.9);font-style:italic;">Ninjai</span>
+          </div>
+          <div class="tl-title">The world sees it.</div>
+          <p class="tl-body">ninjai.pascalmarsh.com goes live. From a bare ceramic form on a workbench in Donegal to a product the world can find. The home hub, reimagined. The story continues.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="f-logo">Ninjai</div>
@@ -771,8 +1311,6 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
   const navCta   = document.getElementById('nav-cta');
   const burger   = document.getElementById('burger');
   const mobMenu  = document.getElementById('mob-menu');
-  const hImg     = document.getElementById('hImg');
-  const hImgInner= document.getElementById('hImgInner');
   const hGlow    = document.getElementById('hGlow');
   const cinOrb   = document.getElementById('cinOrb');
   const luxNum   = document.getElementById('luxNum');
@@ -781,6 +1319,7 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
 
   const darkSecs = document.querySelectorAll('.s-cinematic, .s-light, .s-open, .section-video');
 
+  /* ── NAV THEME ─────────────────────────────────────── */
   function updateNav() {
     const nb = nav.getBoundingClientRect().bottom;
     let dark = false;
@@ -790,11 +1329,11 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
     });
     nav.classList.toggle('dark', dark);
     brandBar.classList.toggle('dark', dark);
-
     const ha = document.querySelector('.hero-actions');
     if (ha) navCta.classList.toggle('show', ha.getBoundingClientRect().bottom < 0);
   }
 
+  /* ── MOBILE MENU ────────────────────────────────────── */
   function closeMob() {
     burger.classList.remove('open');
     mobMenu.classList.remove('open');
@@ -807,13 +1346,13 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
   });
   document.querySelectorAll('.mlink, .m-cta').forEach(el => el.addEventListener('click', closeMob));
 
-  /* Scroll reveal */
+  /* ── SCROLL REVEAL ──────────────────────────────────── */
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
   }, { threshold: 0.07, rootMargin: '0px 0px -44px 0px' });
   document.querySelectorAll('.rv, .rv-l, .rv-r').forEach(el => obs.observe(el));
 
-  /* Lux counter */
+  /* ── LUX COUNTER ────────────────────────────────────── */
   let luxDone = false;
   const luxObs = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting || luxDone) return;
@@ -828,12 +1367,8 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
   }, { threshold: 0.5 });
   if (luxNum) luxObs.observe(luxNum);
 
-  /* Parallax */
-  let tX = 0, tY = 0, sY = 0, raf = false;
-  function applyTransform() {
-    if (hImg && !prefRM) hImg.style.transform = `translateY(${sY * 0.22}px)`;
-    if (hImgInner && !prefRM) hImgInner.style.transform = `rotateY(${tX}deg) rotateX(${tY}deg)`;
-  }
+  /* ── PARALLAX ───────────────────────────────────────── */
+  let sY = 0, raf = false;
   window.addEventListener('scroll', () => {
     sY = window.scrollY;
     if (hGlow && !prefRM) hGlow.style.transform = `translateX(-50%) translateY(${sY * 0.09}px)`;
@@ -841,21 +1376,100 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
       const r = cinOrb.parentElement.getBoundingClientRect();
       cinOrb.style.transform = `translateX(-50%) translateY(${-r.top * 0.13}px)`;
     }
-    if (!raf) { raf = true; requestAnimationFrame(() => { applyTransform(); updateNav(); raf = false; }); }
+    if (!raf) { raf = true; requestAnimationFrame(() => { updateNav(); raf = false; }); }
   }, { passive: true });
+  updateNav();
 
-  if (!prefRM && heroSec) {
-    heroSec.addEventListener('mousemove', e => {
-      if (window.innerWidth < 768) return;
-      const r = heroSec.getBoundingClientRect();
-      tX = ((e.clientX - (r.left + r.width/2)) / r.width) * 7;
-      tY = -((e.clientY - (r.top + r.height/2)) / r.height) * 5;
-      if (!raf) { raf = true; requestAnimationFrame(() => { applyTransform(); raf = false; }); }
-    });
-    heroSec.addEventListener('mouseleave', () => { tX = 0; tY = 0; applyTransform(); });
+  /* ── HERO CAROUSEL ──────────────────────────────────── */
+  const slides    = document.querySelectorAll('.carousel-slide');
+  const dots      = document.querySelectorAll('.cdot');
+  const cProgress = document.getElementById('cProgress');
+  const cPrev     = document.getElementById('cPrev');
+  const cNext     = document.getElementById('cNext');
+  const SLIDE_DUR = 5000;
+  let current = 0;
+  let carouselTimer = null;
+  let progressStart = null;
+  let progressRaf = null;
+
+  function goSlide(idx) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (idx + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    startProgress();
   }
 
-  updateNav();
+  function startProgress() {
+    cancelAnimationFrame(progressRaf);
+    clearTimeout(carouselTimer);
+    cProgress.style.transition = 'none';
+    cProgress.style.width = '0%';
+    progressStart = performance.now();
+
+    function tick(now) {
+      const elapsed = now - progressStart;
+      const pct = Math.min((elapsed / SLIDE_DUR) * 100, 100);
+      cProgress.style.width = pct + '%';
+      if (pct < 100) {
+        progressRaf = requestAnimationFrame(tick);
+      }
+    }
+    progressRaf = requestAnimationFrame(tick);
+    carouselTimer = setTimeout(() => goSlide(current + 1), SLIDE_DUR);
+  }
+
+  // Dot clicks
+  dots.forEach((d, i) => d.addEventListener('click', () => goSlide(i)));
+
+  // Arrow clicks
+  if (cPrev) cPrev.addEventListener('click', e => { e.stopPropagation(); goSlide(current - 1); });
+  if (cNext) cNext.addEventListener('click', e => { e.stopPropagation(); goSlide(current + 1); });
+
+  // Touch swipe on carousel
+  let touchStartX = null;
+  const track = document.getElementById('carouselTrack');
+  if (track) {
+    track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', e => {
+      if (touchStartX === null) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      touchStartX = null;
+      if (Math.abs(dx) < 40) return;
+      goSlide(dx < 0 ? current + 1 : current - 1);
+    });
+  }
+
+  // Start carousel
+  startProgress();
+
+  /* ── VIDEO POSTER → FILM ────────────────────────────── */
+  const videoPlayBtn = document.getElementById('videoPlayBtn');
+  const videoPoster  = document.getElementById('videoPoster');
+  const videoIframe  = document.getElementById('videoIframe');
+
+  if (videoPlayBtn) {
+    videoPlayBtn.addEventListener('click', () => {
+      // Load the iframe src and show it
+      const iframe = videoIframe.querySelector('iframe');
+      iframe.src = iframe.dataset.src;
+      videoPoster.style.display = 'none';
+      videoIframe.style.display = 'block';
+    });
+  }
+
+  /* ── TIMELINE ───────────────────────────────────────── */
+  const tlObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        tlObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('[data-tl]').forEach(el => tlObs.observe(el));
+
 })();
 </script>
 </body>
