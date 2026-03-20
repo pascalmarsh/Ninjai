@@ -492,7 +492,7 @@ footer {
   <p class="w-sub">A precision acoustic chamber, fired in stoneware, tuned to 40Hz. The home hub that moves air.</p>
   <div class="w-price"><span>From </span>€699</div>
   <div class="hero-btns">
-    <button class="btn-primary" onclick="window.location='shop.html'">Order Now</button>
+    <button class="btn-primary" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">Order Now</button>
     <button class="btn-ghost" onclick="document.getElementById('drawing').scrollIntoView({behavior:'smooth'})">See the Engineering</button>
   </div>
 </section>
@@ -1225,7 +1225,7 @@ footer {
   <p class="order-sub rv d2">Ceramic enclosure. 100W passive radiator system. Tuned to 40Hz. International Klein Blue.</p>
   <div class="order-price rv d3">€699</div>
   <div class="hero-btns rv d3">
-    <button class="btn-primary" onclick="window.location='shop.html'">Order Now</button>
+    <button class="btn-primary" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">Order Now</button>
     <button class="btn-ghost" onclick="window.location='index.html'">See all models</button>
   </div>
 </section>
@@ -1338,5 +1338,8 @@ footer {
     window.addEventListener('resize', update, { passive: true });
     update();
   })();
+
+})();
+</script>
 </body>
 </html>
