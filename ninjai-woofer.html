@@ -16,9 +16,8 @@
   --near-black: #080808;
   --mid: #6b6b6b;
   --light-text: #9a9a9a;
-  --brand-h: 84px;
   --nav-h: 52px;
-  --total-top: 136px;
+  --total-top: 52px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,73 +29,36 @@ body {
   overflow-x: hidden;
 }
 
-/* ─── BRAND BAR ──────────────────────── */
-#brand-bar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 300;
-  height: var(--brand-h);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--white);
-  border-bottom: 1px solid rgba(0,0,0,0.07);
-  transition: background 0.4s;
-}
-#brand-bar.dark { background: var(--near-black); border-bottom-color: rgba(255,255,255,0.06); }
-.brand-logo-wrap { cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 44px; }
-.brand-logo-wrap svg { width: 100%; height: 100%; overflow: visible; }
-#sq-orange { transform-box: fill-box; transform-origin: center; transform: rotate(0deg); }
-#sq-blue   { transform-box: fill-box; transform-origin: center; transform: rotate(45deg); }
-:root { --logo-dur: 1.85s; }
-@keyframes mmOrangeCW   { from{transform:rotate(0deg)}   to{transform:rotate(90deg)}  }
-@keyframes mmBlueCCW    { from{transform:rotate(45deg)}  to{transform:rotate(-45deg)} }
-@keyframes mmOrangeSlow { 0%{transform:rotate(0deg)} 60%{transform:rotate(72deg)} 85%{transform:rotate(87deg)} 100%{transform:rotate(90deg)} }
-@keyframes mmBlueSlow   { 0%{transform:rotate(45deg)} 60%{transform:rotate(-27deg)} 85%{transform:rotate(-42deg)} 100%{transform:rotate(-45deg)} }
-.mm-intro #sq-orange { animation: mmOrangeCW   var(--logo-dur) cubic-bezier(0.4,0,0.2,1) forwards; }
-.mm-intro #sq-blue   { animation: mmBlueCCW    var(--logo-dur) cubic-bezier(0.4,0,0.2,1) forwards; }
-.mm-loop  #sq-orange { animation: mmOrangeCW   var(--logo-dur) cubic-bezier(0.4,0,0.2,1) infinite; }
-.mm-loop  #sq-blue   { animation: mmBlueCCW    var(--logo-dur) cubic-bezier(0.4,0,0.2,1) infinite; }
-.mm-slow  #sq-orange { animation: mmOrangeSlow calc(var(--logo-dur)*1.7) cubic-bezier(0.16,1,0.3,1) forwards; }
-.mm-slow  #sq-blue   { animation: mmBlueSlow   calc(var(--logo-dur)*1.7) cubic-bezier(0.16,1,0.3,1) forwards; }
+/* ─── BRAND BAR — hidden on sub-pages ── */
+#brand-bar { display: none; }
 
 /* ─── NAV ────────────────────────────── */
 nav {
   position: fixed;
-  top: var(--brand-h); left: 0; right: 0;
+  top: 0; left: 0; right: 0;
   z-index: 200;
   height: var(--nav-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  background: rgba(255,255,255,0.88);
+  padding: 0 24px;
+  background: rgba(8,8,8,0.85);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  transition: background 0.4s;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-nav.dark { background: rgba(8,8,8,0.9); border-bottom-color: rgba(255,255,255,0.06); }
 .nav-back {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--ikb);
-  transition: opacity 0.2s;
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; font-size: 13px; font-weight: 400;
+  color: rgba(255,255,255,0.6); transition: color 0.2s;
 }
-.nav-back:hover { opacity: 0.7; }
+.nav-back:hover { color: white; }
 .nav-back svg { width: 16px; height: 16px; }
 .nav-title {
   font-family: 'DM Serif Display', serif;
-  font-size: 16px;
-  letter-spacing: -0.01em;
-  color: var(--near-black);
-  transition: color 0.4s;
+  font-size: 16px; letter-spacing: -0.01em;
+  color: var(--white);
 }
-nav.dark .nav-title { color: var(--white); }
 .nav-cta-sm {
   background: var(--ikb);
   color: white; border: none;
@@ -510,16 +472,6 @@ footer {
 </head>
 <body>
 
-<!-- BRAND BAR -->
-<div id="brand-bar">
-  <div class="brand-logo-wrap" id="mmLogo">
-    <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" style="display:block;width:40px;height:44px;overflow:visible;">
-      <rect id="sq-orange" x="20" y="44" width="60" height="60" fill="#F5A623"/>
-      <rect id="sq-blue"   x="20" y="17" width="60" height="60" fill="#1B2FC2"/>
-    </svg>
-  </div>
-</div>
-
 <!-- NAV -->
 <nav id="nav">
   <a class="nav-back" href="index.html">
@@ -529,7 +481,7 @@ footer {
     All models
   </a>
   <div class="nav-title">Ninjai Woofer</div>
-  <button class="nav-cta-sm" onclick="window.location='shop.html'">Order — €699</button>
+  <button class="nav-cta-sm" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">Order — €699</button>
 </nav>
 
 <!-- HERO -->
@@ -1267,7 +1219,7 @@ footer {
 </section>
 
 <!-- ORDER -->
-<section class="s-order">
+<section class="s-order" id="order">
   <p class="drawing-eye rv">Ready to order</p>
   <h2 class="order-title rv d1">Ninjai <em>Woofer.</em></h2>
   <p class="order-sub rv d2">Ceramic enclosure. 100W passive radiator system. Tuned to 40Hz. International Klein Blue.</p>
@@ -1287,58 +1239,11 @@ footer {
 
 <script>
 (function(){
-  const nav    = document.getElementById('nav');
-  const bar    = document.getElementById('brand-bar');
-  const logo   = document.getElementById('mmLogo');
-  const prefRM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let mmState = 'idle', mmBpm = 130, scrollActive = false, hoverActive = false;
-  let mmStopTimer = null, mmDriftTimer = null, scrollDebounce = null;
-
-  // Dark sections
-  const darkSecs = document.querySelectorAll('.w-hero, .stat-row, .s-drawing, .s-order');
-  function updateNav() {
-    const nb = nav.getBoundingClientRect().bottom;
-    let dark = false;
-    darkSecs.forEach(s => { const r = s.getBoundingClientRect(); if (r.top < nb && r.bottom > 0) dark = true; });
-    nav.classList.toggle('dark', dark);
-    bar.classList.toggle('dark', dark);
-  }
-  window.addEventListener('scroll', updateNav, { passive: true });
-  updateNav();
-
   // Scroll reveal
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
   }, { threshold: 0.07, rootMargin: '0px 0px -44px 0px' });
   document.querySelectorAll('.rv, .rv-l, .rv-r').forEach(el => obs.observe(el));
-
-  // Logo animation
-  function mmDur() { return (60/mmBpm)*4; }
-  function mmSetDur(b) { mmBpm=b; document.documentElement.style.setProperty('--logo-dur', mmDur()+'s'); }
-  function mmClear() { logo.classList.remove('mm-intro','mm-loop','mm-slow'); void logo.offsetWidth; }
-  function mmSet(s) {
-    if (mmState===s) return;
-    clearTimeout(mmStopTimer); clearTimeout(mmDriftTimer);
-    mmState=s; mmClear();
-    if (s==='intro') { logo.classList.add('mm-intro'); mmStopTimer=setTimeout(()=>mmSet('idle'), mmDur()*1000); }
-    else if (s==='loop') { logo.classList.add('mm-loop'); mmDriftTimer=setTimeout(mmDrift, 2500+Math.random()*2000); }
-    else if (s==='slow') { logo.classList.add('mm-slow'); mmStopTimer=setTimeout(()=>mmSet('idle'), mmDur()*1700); }
-  }
-  function mmDrift() {
-    if (mmState!=='loop') return;
-    const n = Math.round(Math.min(140, Math.max(120, mmBpm+(Math.random()-.5)*6)));
-    mmSetDur(n); logo.classList.remove('mm-loop'); void logo.offsetWidth; logo.classList.add('mm-loop');
-    mmDriftTimer = setTimeout(mmDrift, 2000+Math.random()*2500);
-  }
-  mmSetDur(130);
-  window.addEventListener('load', () => setTimeout(()=>mmSet('intro'), 800));
-  window.addEventListener('scroll', () => {
-    scrollActive=true; if (mmState==='idle'||mmState==='slow') mmSet('loop');
-    clearTimeout(scrollDebounce);
-    scrollDebounce=setTimeout(()=>{ scrollActive=false; if (mmState==='loop'&&!hoverActive) mmSet('slow'); }, 750);
-  }, { passive:true });
-  logo.addEventListener('mouseenter', () => { hoverActive=true; if (mmState!=='loop') mmSet('loop'); });
-  logo.addEventListener('mouseleave', () => { hoverActive=false; if (mmState==='loop'&&!scrollActive) mmSet('slow'); });
   /* ── EXPLODED ISOMETRIC SCROLL ─────────────────────── */
   (function() {
     const wrap   = document.getElementById('explodedWrap');
