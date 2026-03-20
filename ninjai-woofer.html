@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ninjai Woofer — Acoustic Engineering</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+
+:root {
+  --ikb: #002FA7;
+  --ikb-light: #1a4fd4;
+  --cream: #F5F0E8;
+  --cream-dark: #E8E0D0;
+  --white: #ffffff;
+  --near-black: #080808;
+  --mid: #6b6b6b;
+  --light-text: #9a9a9a;
+  --brand-h: 84px;
+  --nav-h: 52px;
+  --total-top: 136px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--near-black);
+  overflow-x: hidden;
+}
+
+/* ─── BRAND BAR ──────────────────────── */
+#brand-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 300;
+  height: var(--brand-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  transition: background 0.4s;
+}
+#brand-bar.dark { background: var(--near-black); border-bottom-color: rgba(255,255,255,0.06); }
+.brand-logo-wrap { cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 44px; }
+.brand-logo-wrap svg { width: 100%; height: 100%; overflow: visible; }
+#sq-orange { transform-box: fill-box; transform-origin: center; transform: rotate(0deg); }
+#sq-blue   { transform-box: fill-box; transform-origin: center; transform: rotate(45deg); }
+:root { --logo-dur: 1.85s; }
+@keyframes mmOrangeCW   { from{transform:rotate(0deg)}   to{transform:rotate(90deg)}  }
+@keyframes mmBlueCCW    { from{transform:rotate(45deg)}  to{transform:rotate(-45deg)} }
+@keyframes mmOrangeSlow { 0%{transform:rotate(0deg)} 60%{transform:rotate(72deg)} 85%{transform:rotate(87deg)} 100%{transform:rotate(90deg)} }
+@keyframes mmBlueSlow   { 0%{transform:rotate(45deg)} 60%{transform:rotate(-27deg)} 85%{transform:rotate(-42deg)} 100%{transform:rotate(-45deg)} }
+.mm-intro #sq-orange { animation: mmOrangeCW   var(--logo-dur) cubic-bezier(0.4,0,0.2,1) forwards; }
+.mm-intro #sq-blue   { animation: mmBlueCCW    var(--logo-dur) cubic-bezier(0.4,0,0.2,1) forwards; }
+.mm-loop  #sq-orange { animation: mmOrangeCW   var(--logo-dur) cubic-bezier(0.4,0,0.2,1) infinite; }
+.mm-loop  #sq-blue   { animation: mmBlueCCW    var(--logo-dur) cubic-bezier(0.4,0,0.2,1) infinite; }
+.mm-slow  #sq-orange { animation: mmOrangeSlow calc(var(--logo-dur)*1.7) cubic-bezier(0.16,1,0.3,1) forwards; }
+.mm-slow  #sq-blue   { animation: mmBlueSlow   calc(var(--logo-dur)*1.7) cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* ─── NAV ────────────────────────────── */
+nav {
+  position: fixed;
+  top: var(--brand-h); left: 0; right: 0;
+  z-index: 200;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: background 0.4s;
+}
+nav.dark { background: rgba(8,8,8,0.9); border-bottom-color: rgba(255,255,255,0.06); }
+.nav-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ikb);
+  transition: opacity 0.2s;
+}
+.nav-back:hover { opacity: 0.7; }
+.nav-back svg { width: 16px; height: 16px; }
+.nav-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: var(--near-black);
+  transition: color 0.4s;
+}
+nav.dark .nav-title { color: var(--white); }
+.nav-cta-sm {
+  background: var(--ikb);
+  color: white; border: none;
+  padding: 8px 20px; border-radius: 100px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.nav-cta-sm:hover { background: var(--ikb-light); }
+
+/* ─── HERO ───────────────────────────── */
+.w-hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--total-top) + 48px) 24px 64px;
+  background: var(--near-black);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.w-hero-orb {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(700px, 120vw); height: min(700px, 120vw);
+  background: radial-gradient(ellipse, rgba(0,47,167,0.35) 0%, transparent 65%);
+  pointer-events: none;
+  animation: orbPulse 6s ease-in-out infinite;
+}
+@keyframes orbPulse {
+  0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+  50%     { transform: translate(-50%,-50%) scale(1.1); opacity: 1; }
+}
+.w-eyebrow {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); margin-bottom: 16px;
+  position: relative; z-index: 1;
+  opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+}
+.w-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(52px, 10vw, 112px);
+  line-height: 1.0; letter-spacing: -0.025em;
+  color: var(--white); margin-bottom: 8px;
+  position: relative; z-index: 1;
+  opacity: 0; animation: fadeUp 0.9s 0.32s forwards;
+}
+.w-title em { font-style: italic; color: #5580ff; }
+.w-sub {
+  font-size: clamp(15px, 2vw, 19px); font-weight: 300;
+  color: rgba(255,255,255,0.45); max-width: 440px;
+  line-height: 1.65; margin: 22px auto 40px;
+  position: relative; z-index: 1;
+  opacity: 0; animation: fadeUp 0.9s 0.44s forwards;
+}
+.w-price {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(32px, 5vw, 52px);
+  color: var(--white); letter-spacing: -0.02em;
+  position: relative; z-index: 1;
+  opacity: 0; animation: fadeUp 0.9s 0.54s forwards;
+  margin-bottom: 32px;
+}
+.w-price span { font-size: 0.5em; font-family: 'DM Sans', sans-serif; font-weight: 300; color: rgba(255,255,255,0.4); vertical-align: super; }
+.hero-btns {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  position: relative; z-index: 1;
+  opacity: 0; animation: fadeUp 0.9s 0.62s forwards;
+}
+.btn-primary {
+  background: var(--white); color: var(--near-black);
+  border: none; padding: 14px 32px; border-radius: 100px;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, transform 0.2s;
+}
+.btn-primary:hover { background: var(--cream); transform: translateY(-2px); }
+.btn-ghost {
+  background: transparent; color: rgba(255,255,255,0.8);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  padding: 14px 32px; border-radius: 100px;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.7); color: white; transform: translateY(-2px); }
+
+/* ─── SCROLL REVEAL ──────────────────── */
+.rv { opacity: 0; transform: translateY(36px); transition: opacity 0.88s cubic-bezier(0.16,1,0.3,1), transform 0.88s cubic-bezier(0.16,1,0.3,1); }
+.rv.in { opacity: 1; transform: none; }
+.rv-l { opacity: 0; transform: translateX(-40px); transition: opacity 0.88s cubic-bezier(0.16,1,0.3,1), transform 0.88s cubic-bezier(0.16,1,0.3,1); }
+.rv-l.in { opacity: 1; transform: none; }
+.rv-r { opacity: 0; transform: translateX(40px); transition: opacity 0.88s cubic-bezier(0.16,1,0.3,1), transform 0.88s cubic-bezier(0.16,1,0.3,1); }
+.rv-r.in { opacity: 1; transform: none; }
+.d1{transition-delay:0.08s}.d2{transition-delay:0.18s}.d3{transition-delay:0.28s}
+
+/* ─── STAT ROW ───────────────────────── */
+.stat-row {
+  background: var(--near-black);
+  padding: 64px clamp(24px,6vw,80px);
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+.stat-block {
+  flex: 1;
+  min-width: 160px;
+  max-width: 220px;
+  padding: 32px 24px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
+  transition: background 0.3s;
+}
+.stat-block:hover { background: rgba(0,47,167,0.15); }
+.stat-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(32px, 5vw, 52px);
+  color: var(--white); letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.stat-unit { font-size: 0.45em; font-family: 'DM Sans', sans-serif; font-weight: 300; color: rgba(255,255,255,0.4); vertical-align: super; }
+.stat-lbl { font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+
+/* ─── CERAMIC STORY ──────────────────── */
+.s-ceramic {
+  padding: clamp(80px,10vw,140px) clamp(24px,6vw,80px);
+  background: var(--cream);
+}
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(40px,7vw,100px);
+  align-items: start;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.sec-eye { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ikb); margin-bottom: 16px; }
+.sec-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px,5vw,56px); line-height: 1.05; letter-spacing: -0.022em; margin-bottom: 24px; }
+.sec-body { font-size: 15px; font-weight: 300; line-height: 1.8; color: var(--mid); margin-bottom: 16px; }
+.sec-body strong { color: var(--near-black); font-weight: 400; }
+.ceramic-benefits {
+  display: flex; flex-direction: column; gap: 16px; margin-top: 28px;
+}
+.benefit {
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.benefit-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--ikb); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 16px;
+}
+.benefit-text strong { display: block; font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+.benefit-text span { font-size: 13px; font-weight: 300; color: var(--mid); line-height: 1.5; }
+
+/* ─── CROSS-SECTION DRAWING ──────────── */
+.s-drawing {
+  padding: clamp(80px,10vw,140px) clamp(16px,4vw,48px);
+  background: #0a0a0a;
+}
+.drawing-header { text-align: center; margin-bottom: 56px; }
+.drawing-eye {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.32); margin-bottom: 16px;
+}
+.drawing-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(28px,4.5vw,52px); line-height: 1.05;
+  color: var(--white); letter-spacing: -0.02em; margin-bottom: 16px;
+}
+.drawing-title em { font-style: italic; color: #5580ff; }
+.drawing-sub {
+  font-size: 14px; font-weight: 300;
+  color: rgba(255,255,255,0.38); max-width: 480px; margin: 0 auto; line-height: 1.7;
+}
+.views-wrap {
+  display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px;
+}
+.view-panel {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.view-lbl {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.18em;
+  text-transform: uppercase; color: rgba(255,255,255,0.28);
+}
+
+/* ─── SPEC TABLE ─────────────────────── */
+.spec-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px; max-width: 960px; margin: 0 auto;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden;
+}
+.spec-cell { background: #111; padding: 20px 22px; }
+.spec-cell:hover { background: #181828; }
+.spec-k { font-size: 10px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.28); margin-bottom: 6px; }
+.spec-v { font-family: 'DM Serif Display', serif; font-size: clamp(18px,2.5vw,24px); color: var(--white); letter-spacing: -0.01em; margin-bottom: 3px; }
+.spec-s { font-size: 11px; color: rgba(255,255,255,0.32); line-height: 1.5; }
+
+/* ─── ENGINEERING NOTE ───────────────── */
+.engineering-note {
+  max-width: 760px; margin: 48px auto 0;
+  padding: 28px 32px;
+  background: rgba(0,47,167,0.12);
+  border: 1px solid rgba(0,47,167,0.25);
+  border-radius: 12px;
+}
+.eng-title { font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #5580ff; margin-bottom: 12px; }
+.eng-body { font-size: 13.5px; font-weight: 300; color: rgba(255,255,255,0.5); line-height: 1.75; }
+.eng-body strong { color: rgba(255,255,255,0.75); font-weight: 400; }
+
+/* ─── PASSIVE RADIATOR EXPLAINER ─────── */
+.s-passive {
+  padding: clamp(80px,10vw,140px) clamp(24px,6vw,80px);
+  background: var(--white);
+}
+.passive-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 2px; max-width: 960px; margin: 48px auto 0;
+  background: #eee; border: 2px solid #eee;
+}
+.pg-cell { background: var(--white); padding: 32px 28px; }
+.pg-cell.highlight { background: var(--ikb); }
+.pg-num { font-family: 'DM Serif Display', serif; font-size: clamp(36px,6vw,64px); color: var(--ikb); letter-spacing: -0.03em; margin-bottom: 8px; }
+.pg-cell.highlight .pg-num { color: var(--white); }
+.pg-label { font-size: 14px; font-weight: 500; color: var(--near-black); margin-bottom: 8px; }
+.pg-cell.highlight .pg-label { color: var(--white); }
+.pg-body { font-size: 13px; font-weight: 300; color: var(--mid); line-height: 1.65; }
+.pg-cell.highlight .pg-body { color: rgba(255,255,255,0.6); }
+
+/* ─── ORDER SECTION ──────────────────── */
+.s-order {
+  padding: clamp(80px,10vw,140px) clamp(24px,6vw,80px);
+  background: var(--near-black); text-align: center;
+}
+.order-title { font-family: 'DM Serif Display', serif; font-size: clamp(36px,6vw,72px); line-height: 1.05; color: var(--white); margin-bottom: 16px; letter-spacing: -0.025em; }
+.order-title em { font-style: italic; color: #5580ff; }
+.order-sub { font-size: 16px; font-weight: 300; color: rgba(255,255,255,0.4); max-width: 400px; margin: 0 auto 40px; line-height: 1.7; }
+.order-price { font-family: 'DM Serif Display', serif; font-size: clamp(40px,7vw,80px); color: var(--white); letter-spacing: -0.03em; margin-bottom: 32px; }
+
+/* ─── FOOTER ─────────────────────────── */
+footer {
+  padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07);
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--white); flex-wrap: wrap; gap: 12px;
+}
+.f-logo { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--ikb); }
+.f-copy { font-size: 12px; color: var(--light-text); }
+.f-back { font-size: 12px; color: var(--ikb); text-decoration: none; }
+.f-back:hover { text-decoration: underline; }
+
+/* ─── KEYFRAMES ──────────────────────── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+/* ─── RESPONSIVE ─────────────────────── */
+@media (max-width: 860px) {
+  :root { --brand-h: 64px; --total-top: 116px; }
+  nav { padding: 0 24px; }
+  .two-col { grid-template-columns: 1fr; }
+  .spec-grid { grid-template-columns: 1fr 1fr; }
+  .passive-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  :root { --brand-h: 56px; --nav-h: 48px; --total-top: 104px; }
+  .spec-grid { grid-template-columns: 1fr; }
+  footer { flex-direction: column; align-items: flex-start; padding: 22px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- BRAND BAR -->
+<div id="brand-bar">
+  <div class="brand-logo-wrap" id="mmLogo">
+    <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" style="display:block;width:40px;height:44px;overflow:visible;">
+      <rect id="sq-orange" x="20" y="44" width="60" height="60" fill="#F5A623"/>
+      <rect id="sq-blue"   x="20" y="17" width="60" height="60" fill="#1B2FC2"/>
+    </svg>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-back" href="index.html">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    All models
+  </a>
+  <div class="nav-title">Ninjai Woofer</div>
+  <button class="nav-cta-sm" onclick="window.location='shop.html'">Order — €699</button>
+</nav>
+
+<!-- HERO -->
+<section class="w-hero">
+  <div class="w-hero-orb"></div>
+  <p class="w-eyebrow">Ninjai Woofer · Audio Edition</p>
+  <h1 class="w-title">Feel the<br><em>music.</em></h1>
+  <p class="w-sub">A precision acoustic chamber, fired in stoneware, tuned to 40Hz. The home hub that moves air.</p>
+  <div class="w-price"><span>From </span>€699</div>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="window.location='shop.html'">Order Now</button>
+    <button class="btn-ghost" onclick="document.getElementById('drawing').scrollIntoView({behavior:'smooth'})">See the Engineering</button>
+  </div>
+</section>
+
+<!-- STAT ROW -->
+<section class="stat-row">
+  <div class="stat-block rv">
+    <div class="stat-num">100<span class="stat-unit">W</span></div>
+    <div class="stat-lbl">RMS Output</div>
+  </div>
+  <div class="stat-block rv d1">
+    <div class="stat-num">35<span class="stat-unit">Hz</span></div>
+    <div class="stat-lbl">F3 Bass Limit</div>
+  </div>
+  <div class="stat-block rv d2">
+    <div class="stat-num">112<span class="stat-unit">dB</span></div>
+    <div class="stat-lbl">Peak SPL at 1m</div>
+  </div>
+  <div class="stat-block rv d3">
+    <div class="stat-num">18<span class="stat-unit">mm</span></div>
+    <div class="stat-lbl">Ceramic Wall</div>
+  </div>
+  <div class="stat-block rv d3">
+    <div class="stat-num">40<span class="stat-unit">Hz</span></div>
+    <div class="stat-lbl">Tuning Frequency</div>
+  </div>
+</section>
+
+<!-- CERAMIC STORY -->
+<section class="s-ceramic">
+  <div class="two-col">
+    <div class="rv-l">
+      <p class="sec-eye">The material</p>
+      <h2 class="sec-title">Why ceramic<br>changes everything.</h2>
+      <p class="sec-body">Every speaker enclosure resonates. Wood, MDF, plastic — they all flex, absorb energy, and add a character to the sound you didn't ask for. <strong>Ceramic doesn't.</strong></p>
+      <p class="sec-body">High-fire stoneware has a resonant frequency well above the audio band. The walls don't vibrate sympathetically with the music. At 100W, the enclosure stays acoustically silent — only the air moves, only the driver speaks.</p>
+      <p class="sec-body">The cobalt glaze that gives the base its International Klein Blue finish is integral to the material — not painted on. The colour and the acoustic properties are fired together at 1280°C. One object, no compromises.</p>
+    </div>
+    <div class="rv-r d2">
+      <div class="ceramic-benefits">
+        <div class="benefit">
+          <div class="benefit-icon">🎯</div>
+          <div class="benefit-text">
+            <strong>Resonant frequency above audio band</strong>
+            <span>The ceramic walls ring at frequencies your ears can't hear. Below 20kHz, the enclosure is effectively silent — all the acoustic energy stays in the music.</span>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">⚖️</div>
+          <div class="benefit-text">
+            <strong>Mass kills resonance</strong>
+            <span>Stoneware is 2.4× denser than MDF. Heavier enclosures are consistently better sounding — it's why audiophile speakers weigh absurd amounts. Physics, not marketing.</span>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">💧</div>
+          <div class="benefit-text">
+            <strong>Naturally airtight</strong>
+            <span>Fired ceramic is hermetically sealed without compounds or gaskets. Predictable internal air volume means precisely calculable acoustic behaviour — every unit identical.</span>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">🔷</div>
+          <div class="benefit-text">
+            <strong>Integral bracing ribs</strong>
+            <span>Three horizontal ribs are cast into the mould and fired as part of the form. No glued joints, no flex. The enclosure is as rigid as the geometry allows.</span>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">🎨</div>
+          <div class="benefit-text">
+            <strong>Cobalt IKB glaze</strong>
+            <span>Reduction-fired cobalt blue at 1280°C produces a depth of colour that no painted surface can match. The Ninjai blue is in the clay, not on it.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CROSS-SECTION DRAWING -->
+<section class="s-drawing" id="drawing">
+  <div class="drawing-header">
+    <p class="drawing-eye rv">Acoustic Engineering</p>
+    <h2 class="drawing-title rv d1">The interior<br><em>architecture.</em></h2>
+    <p class="drawing-sub rv d2">Technical cross-section at 1:5 scale. Every internal dimension is calculated from acoustic first principles — Helmholtz resonator theory, passive radiator tuning equations, and driver parameter matching.</p>
+  </div>
+
+  <div class="views-wrap">
+    <!-- ═══ FRONT CROSS-SECTION ═══ -->
+    <div class="view-panel rv">
+      <p class="view-lbl">Front Elevation — Section A–A</p>
+      <svg width="320" height="500" viewBox="0 0 340 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ikbG" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1B3FCC"/>
+            <stop offset="40%" stop-color="#002FA7"/>
+            <stop offset="100%" stop-color="#001A6E"/>
+          </linearGradient>
+          <pattern id="cer" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+            <rect width="6" height="6" fill="#1a2a7a"/>
+            <line x1="0" y1="6" x2="6" y2="0" stroke="#0f1f5a" stroke-width="0.5"/>
+          </pattern>
+          <pattern id="fom" x="0" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
+            <rect width="5" height="5" fill="#1a1a1a"/>
+            <circle cx="2.5" cy="2.5" r="1.5" fill="#252525"/>
+          </pattern>
+          <pattern id="elec" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+            <rect width="8" height="8" fill="#0a0a1e"/>
+            <rect x="1" y="1" width="2" height="2" fill="#1a3a6a" rx="0.5"/>
+            <rect x="5" y="5" width="2" height="2" fill="#2a5a3a" rx="0.5"/>
+            <line x1="3" y1="2" x2="5" y2="6" stroke="#334" stroke-width="0.5"/>
+          </pattern>
+          <linearGradient id="airG" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#051535"/>
+            <stop offset="100%" stop-color="#030d22"/>
+          </linearGradient>
+          <linearGradient id="coneG" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#555"/>
+            <stop offset="50%" stop-color="#888"/>
+            <stop offset="100%" stop-color="#444"/>
+          </linearGradient>
+          <filter id="sglow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="340" height="520" fill="#0a0a0a"/>
+
+        <!-- Dim lines -->
+        <line x1="285" y1="60" x2="285" y2="440" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="280" y1="60" x2="290" y2="60" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+        <line x1="280" y1="440" x2="290" y2="440" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+        <text x="298" y="255" fill="rgba(255,255,255,0.3)" font-size="10" text-anchor="middle" transform="rotate(90,298,255)">36cm height</text>
+        <line x1="55" y1="458" x2="275" y2="458" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="55" y1="453" x2="55" y2="463" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+        <line x1="275" y1="453" x2="275" y2="463" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+        <text x="165" y="475" fill="rgba(255,255,255,0.3)" font-size="10" text-anchor="middle">32cm base width</text>
+
+        <!-- Ceramic walls -->
+        <polygon points="50,440 65,440 113,60 103,60" fill="url(#cer)"/>
+        <polygon points="275,440 265,440 217,60 227,60" fill="url(#cer)"/>
+        <rect x="50" y="425" width="230" height="15" fill="url(#cer)"/>
+        <rect x="103" y="60" width="114" height="14" fill="url(#cer)"/>
+        <polygon points="50,440 280,440 227,60 103,60" fill="none" stroke="url(#ikbG)" stroke-width="2"/>
+
+        <!-- Internal air -->
+        <polygon points="65,425 265,425 217,74 113,74" fill="url(#airG)" stroke="rgba(100,150,255,0.2)" stroke-width="0.5"/>
+
+        <!-- Foam -->
+        <polygon points="65,425 80,425 123,74 113,74" fill="url(#fom)" opacity="0.7"/>
+        <polygon points="265,425 250,425 207,74 217,74" fill="url(#fom)" opacity="0.7"/>
+        <rect x="65" y="412" width="200" height="13" fill="url(#fom)" opacity="0.7"/>
+
+        <!-- Bracing ribs -->
+        <rect x="77" y="334" width="176" height="7" fill="url(#cer)" stroke="rgba(100,150,255,0.3)" stroke-width="0.5" rx="1"/>
+        <rect x="89" y="246" width="152" height="7" fill="url(#cer)" stroke="rgba(100,150,255,0.3)" stroke-width="0.5" rx="1"/>
+        <rect x="101" y="158" width="128" height="7" fill="url(#cer)" stroke="rgba(100,150,255,0.3)" stroke-width="0.5" rx="1"/>
+        <text x="262" y="340" fill="rgba(255,255,255,0.25)" font-size="8">Rib 1</text>
+        <text x="250" y="252" fill="rgba(255,255,255,0.25)" font-size="8">Rib 2</text>
+        <text x="238" y="164" fill="rgba(255,255,255,0.25)" font-size="8">Rib 3</text>
+
+        <!-- Active driver (front/left) -->
+        <ellipse cx="95" cy="210" rx="22" ry="16" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+        <ellipse cx="95" cy="210" rx="12" ry="8" fill="#1a1a1a" stroke="#555" stroke-width="0.5"/>
+        <rect x="55" y="204" width="28" height="12" fill="#3a3a3a" stroke="#555" stroke-width="0.5" rx="2"/>
+        <path d="M 55 210 Q 68 200 83 210 Q 68 220 55 210" fill="none" stroke="#666" stroke-width="1.5"/>
+        <path d="M 55 204 L 18 188 L 18 232 L 55 216" fill="url(#coneG)" stroke="#777" stroke-width="0.5" opacity="0.9"/>
+        <path d="M 18 188 Q 10 210 18 232" fill="none" stroke="#888" stroke-width="2.5"/>
+        <text x="2" y="200" fill="rgba(255,255,255,0.45)" font-size="8" text-anchor="end">20cm</text>
+        <text x="2" y="210" fill="rgba(255,255,255,0.45)" font-size="8" text-anchor="end">100W</text>
+        <text x="2" y="220" fill="rgba(255,255,255,0.45)" font-size="8" text-anchor="end">driver</text>
+
+        <!-- Passive radiator (rear/right) -->
+        <path d="M 285 204 L 322 188 L 322 232 L 285 216" fill="url(#coneG)" stroke="#777" stroke-width="0.5" opacity="0.7"/>
+        <path d="M 322 188 Q 330 210 322 232" fill="none" stroke="#888" stroke-width="2.5"/>
+        <rect x="276" y="202" width="18" height="16" fill="#1e1e1e" stroke="#444" stroke-width="0.5" rx="1"/>
+        <ellipse cx="285" cy="210" rx="6" ry="5" fill="#555" stroke="#777" stroke-width="0.5"/>
+        <text x="337" y="205" fill="rgba(255,255,255,0.45)" font-size="8">Passive</text>
+        <text x="337" y="215" fill="rgba(255,255,255,0.45)" font-size="8">radiator</text>
+        <text x="337" y="225" fill="rgba(255,255,255,0.45)" font-size="8">+ mass</text>
+
+        <!-- Electronics bay -->
+        <rect x="113" y="74" width="104" height="53" fill="url(#elec)" stroke="rgba(100,150,255,0.2)" stroke-width="0.5"/>
+        <rect x="109" y="126" width="112" height="6" fill="url(#cer)"/>
+        <text x="165" y="48" fill="rgba(100,180,255,0.55)" font-size="9" text-anchor="middle">Electronics · CPU · WiFi</text>
+        <line x1="165" y1="52" x2="165" y2="74" stroke="rgba(100,180,255,0.2)" stroke-width="0.5"/>
+
+        <!-- Shade mount -->
+        <rect x="150" y="42" width="30" height="20" fill="#111" stroke="rgba(100,150,255,0.3)" stroke-width="0.5" rx="3"/>
+        <rect x="156" y="30" width="18" height="14" fill="#0a0a0a" stroke="rgba(100,150,255,0.25)" stroke-width="0.5" rx="2"/>
+
+        <!-- Acoustic waves inside -->
+        <g opacity="0.18" filter="url(#sglow)">
+          <path d="M 100 300 Q 165 283 230 300 Q 165 317 100 300" fill="none" stroke="#4a7aff" stroke-width="1" stroke-dasharray="4,3"/>
+          <path d="M 108 350 Q 165 336 222 350 Q 165 364 108 350" fill="none" stroke="#4a7aff" stroke-width="0.8" stroke-dasharray="3,3"/>
+          <path d="M 113 165 Q 165 153 217 165 Q 165 177 113 165" fill="none" stroke="#4a7aff" stroke-width="0.8" stroke-dasharray="3,3"/>
+        </g>
+
+        <!-- Cobalt glaze highlight -->
+        <line x1="56" y1="380" x2="107" y2="85" stroke="rgba(200,220,255,0.06)" stroke-width="10"/>
+
+        <text x="165" y="500" fill="rgba(255,255,255,0.18)" font-size="9" text-anchor="middle">Section A–A · 1:5 scale · cm</text>
+      </svg>
+    </div>
+
+    <!-- ═══ SIDE CROSS-SECTION ═══ -->
+    <div class="view-panel rv d2">
+      <p class="view-lbl">Side Elevation — Section B–B</p>
+      <svg width="240" height="500" viewBox="0 0 260 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ikbG2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1B3FCC"/>
+            <stop offset="100%" stop-color="#001A6E"/>
+          </linearGradient>
+          <pattern id="cer2" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+            <rect width="6" height="6" fill="#1a2a7a"/>
+            <line x1="0" y1="6" x2="6" y2="0" stroke="#0f1f5a" stroke-width="0.5"/>
+          </pattern>
+          <pattern id="fom2" x="0" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
+            <rect width="5" height="5" fill="#1a1a1a"/>
+            <circle cx="2.5" cy="2.5" r="1.5" fill="#252525"/>
+          </pattern>
+          <linearGradient id="airG2" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#051535"/>
+            <stop offset="100%" stop-color="#030d22"/>
+          </linearGradient>
+          <linearGradient id="coneG2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#555"/>
+            <stop offset="50%" stop-color="#888"/>
+            <stop offset="100%" stop-color="#444"/>
+          </linearGradient>
+        </defs>
+        <rect width="260" height="520" fill="#0a0a0a"/>
+
+        <!-- Depth callout -->
+        <line x1="45" y1="458" x2="205" y2="458" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="45" y1="453" x2="45" y2="463" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+        <line x1="205" y1="453" x2="205" y2="463" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+        <text x="125" y="475" fill="rgba(255,255,255,0.3)" font-size="10" text-anchor="middle">20cm depth</text>
+
+        <!-- Walls -->
+        <polygon points="45,440 59,440 109,60 97,60" fill="url(#cer2)"/>
+        <polygon points="205,440 191,440 141,60 153,60" fill="url(#cer2)"/>
+        <rect x="45" y="425" width="160" height="15" fill="url(#cer2)"/>
+        <rect x="97" y="60" width="56" height="14" fill="url(#cer2)"/>
+        <polygon points="45,440 205,440 153,60 97,60" fill="none" stroke="url(#ikbG2)" stroke-width="2"/>
+
+        <!-- Internal air -->
+        <polygon points="59,425 191,425 141,74 109,74" fill="url(#airG2)" stroke="rgba(100,150,255,0.2)" stroke-width="0.5"/>
+
+        <!-- Foam -->
+        <polygon points="59,425 72,425 118,74 109,74" fill="url(#fom2)" opacity="0.7"/>
+        <polygon points="191,425 178,425 132,74 141,74" fill="url(#fom2)" opacity="0.7"/>
+        <rect x="59" y="412" width="132" height="13" fill="url(#fom2)" opacity="0.7"/>
+
+        <!-- Ribs -->
+        <rect x="71" y="334" width="108" height="7" fill="url(#cer2)" stroke="rgba(100,150,255,0.3)" stroke-width="0.5" rx="1"/>
+        <rect x="84" y="246" width="82" height="7" fill="url(#cer2)" stroke="rgba(100,150,255,0.3)" stroke-width="0.5" rx="1"/>
+        <rect x="96" y="158" width="58" height="7" fill="url(#cer2)" stroke="rgba(100,150,255,0.3)" stroke-width="0.5" rx="1"/>
+
+        <!-- Passive radiator (right/rear face) — side profile circle -->
+        <ellipse cx="198" cy="210" rx="10" ry="28" fill="#222" stroke="#555" stroke-width="1"/>
+        <ellipse cx="198" cy="210" rx="6" ry="18" fill="#666" stroke="#777" stroke-width="0.5" opacity="0.7"/>
+        <ellipse cx="198" cy="210" rx="5" ry="7" fill="#444" stroke="#666" stroke-width="0.5"/>
+        <text x="214" y="205" fill="rgba(255,255,255,0.4)" font-size="8">Passive</text>
+        <text x="214" y="215" fill="rgba(255,255,255,0.4)" font-size="8">radiator</text>
+
+        <!-- Electronics bay -->
+        <rect x="109" y="74" width="32" height="50" fill="#0a0a1e" stroke="rgba(100,150,255,0.2)" stroke-width="0.5"/>
+        <rect x="109" y="124" width="32" height="6" fill="url(#cer2)"/>
+
+        <!-- Wall thickness callout -->
+        <line x1="45" y1="290" x2="59" y2="290" stroke="rgba(255,200,100,0.55)" stroke-width="1"/>
+        <line x1="45" y1="286" x2="45" y2="294" stroke="rgba(255,200,100,0.55)" stroke-width="1"/>
+        <line x1="59" y1="286" x2="59" y2="294" stroke="rgba(255,200,100,0.55)" stroke-width="1"/>
+        <text x="30" y="288" fill="rgba(255,200,100,0.55)" font-size="8" text-anchor="middle">18mm</text>
+        <text x="30" y="298" fill="rgba(255,200,100,0.55)" font-size="8" text-anchor="middle">wall</text>
+
+        <!-- Front / Rear labels -->
+        <text x="45" y="498" fill="rgba(255,255,255,0.2)" font-size="9" text-anchor="middle">FRONT</text>
+        <text x="205" y="498" fill="rgba(255,255,255,0.2)" font-size="9" text-anchor="middle">REAR</text>
+        <line x1="45" y1="486" x2="45" y2="445" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <line x1="205" y1="486" x2="205" y2="445" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" stroke-dasharray="2,2"/>
+
+        <text x="125" y="500" fill="rgba(255,255,255,0.18)" font-size="9" text-anchor="middle">Section B–B · 1:5 scale</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Engineering note -->
+  <div class="engineering-note rv">
+    <div class="eng-title">Why a passive radiator, not a port</div>
+    <div class="eng-body">
+      A conventional bass reflex port for this enclosure volume, tuned to 40Hz, would require a tube <strong>4.6 metres long</strong> — physically impossible to fold into the base. A passive radiator (a second cone with no magnet, tuned by a bolt-on mass disk) achieves identical acoustic behaviour with no tube at all. This is how <strong>KEF, Bose, and most premium compact speakers</strong> solve this exact problem. The tuning frequency is adjusted at manufacture by the weight of the mass disk — making each ceramic unit acoustically identical despite natural firing shrinkage variation. The rear-facing radiator also creates an omnidirectional bass field, filling the room from every direction rather than projecting forward.
+    </div>
+  </div>
+
+  <!-- Spec grid -->
+  <div class="spec-grid" style="margin-top:48px;">
+    <div class="spec-cell rv">
+      <div class="spec-k">External dimensions</div>
+      <div class="spec-v">32 × 20 × 36</div>
+      <div class="spec-s">W × D × H cm · revised for acoustics</div>
+    </div>
+    <div class="spec-cell rv d1">
+      <div class="spec-k">Net acoustic volume</div>
+      <div class="spec-v">~7.5 litres</div>
+      <div class="spec-s">After driver + electronics displacement</div>
+    </div>
+    <div class="spec-cell rv d2">
+      <div class="spec-k">Enclosure type</div>
+      <div class="spec-v">Passive radiator</div>
+      <div class="spec-s">No port tube · ceramic-compatible</div>
+    </div>
+    <div class="spec-cell rv">
+      <div class="spec-k">Active driver</div>
+      <div class="spec-v">8-inch / 20cm</div>
+      <div class="spec-s">Front face · 100W RMS · Qts 0.3–0.4</div>
+    </div>
+    <div class="spec-cell rv d1">
+      <div class="spec-k">Passive radiator</div>
+      <div class="spec-v">8-inch / 20cm</div>
+      <div class="spec-s">Rear face · tunable mass disk · Fb ≈ 40Hz</div>
+    </div>
+    <div class="spec-cell rv d2">
+      <div class="spec-k">Tuning frequency</div>
+      <div class="spec-v">~40 Hz</div>
+      <div class="spec-s">Musical, tight bass · F3 at ~35Hz</div>
+    </div>
+    <div class="spec-cell rv">
+      <div class="spec-k">Wall thickness</div>
+      <div class="spec-v">18mm</div>
+      <div class="spec-s">High-fire stoneware · acoustically inert</div>
+    </div>
+    <div class="spec-cell rv d1">
+      <div class="spec-k">Internal bracing</div>
+      <div class="spec-v">3 ribs</div>
+      <div class="spec-s">Integral ceramic · cast into mould</div>
+    </div>
+    <div class="spec-cell rv d2">
+      <div class="spec-k">Glaze</div>
+      <div class="spec-v">Cobalt IKB</div>
+      <div class="spec-s">Reduction fired 1280°C · matches #002FA7</div>
+    </div>
+    <div class="spec-cell rv">
+      <div class="spec-k">Peak SPL</div>
+      <div class="spec-v">108–112 dB</div>
+      <div class="spec-s">At 1m · 90dB/W/m driver sensitivity</div>
+    </div>
+    <div class="spec-cell rv d1">
+      <div class="spec-k">Damping</div>
+      <div class="spec-v">20mm foam</div>
+      <div class="spec-s">All non-driver interior faces</div>
+    </div>
+    <div class="spec-cell rv d2">
+      <div class="spec-k">Electronics bay</div>
+      <div class="spec-v">Top section</div>
+      <div class="spec-s">Acoustically isolated · sealed ceramic shelf</div>
+    </div>
+  </div>
+</section>
+
+<!-- PASSIVE RADIATOR EXPLAINER -->
+<section class="s-passive">
+  <div style="max-width:960px;margin:0 auto;">
+    <p class="sec-eye rv" style="text-align:center">How it works</p>
+    <h2 class="sec-title rv d1" style="text-align:center;margin-bottom:8px">The passive radiator<br>explained simply.</h2>
+  </div>
+  <div class="passive-grid">
+    <div class="pg-cell rv d1">
+      <div class="pg-num">1</div>
+      <div class="pg-label">The active driver pushes air</div>
+      <div class="pg-body">The 100W driver on the front face moves forward and backward, creating pressure waves inside the sealed ceramic chamber. At bass frequencies, this internal pressure builds rapidly.</div>
+    </div>
+    <div class="pg-cell highlight rv d2">
+      <div class="pg-num">2</div>
+      <div class="pg-label">The passive radiator responds</div>
+      <div class="pg-body">On the rear face, a second cone — with no magnet, no motor — responds to the internal pressure. It moves in sympathy, radiating bass into the room from behind. This doubles the effective radiating area without doubling the power.</div>
+    </div>
+    <div class="pg-cell rv d3">
+      <div class="pg-num">3</div>
+      <div class="pg-label">The mass disk controls tuning</div>
+      <div class="pg-body">A small ceramic disk bolted to the passive cone adds mass. More mass = lower tuning frequency. This is set at manufacture to exactly 40Hz — below this, the system rolls off gently rather than catastrophically.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER -->
+<section class="s-order">
+  <p class="drawing-eye rv">Ready to order</p>
+  <h2 class="order-title rv d1">Ninjai <em>Woofer.</em></h2>
+  <p class="order-sub rv d2">Ceramic enclosure. 100W passive radiator system. Tuned to 40Hz. International Klein Blue.</p>
+  <div class="order-price rv d3">€699</div>
+  <div class="hero-btns rv d3">
+    <button class="btn-primary" onclick="window.location='shop.html'">Order Now</button>
+    <button class="btn-ghost" onclick="window.location='index.html'">See all models</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Ninjai</div>
+  <div class="f-copy">© 2026 MarshMade. All rights reserved.</div>
+  <a class="f-back" href="index.html">← Back to Ninjai</a>
+</footer>
+
+<script>
+(function(){
+  const nav    = document.getElementById('nav');
+  const bar    = document.getElementById('brand-bar');
+  const logo   = document.getElementById('mmLogo');
+  const prefRM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let mmState = 'idle', mmBpm = 130, scrollActive = false, hoverActive = false;
+  let mmStopTimer = null, mmDriftTimer = null, scrollDebounce = null;
+
+  // Dark sections
+  const darkSecs = document.querySelectorAll('.w-hero, .stat-row, .s-drawing, .s-order');
+  function updateNav() {
+    const nb = nav.getBoundingClientRect().bottom;
+    let dark = false;
+    darkSecs.forEach(s => { const r = s.getBoundingClientRect(); if (r.top < nb && r.bottom > 0) dark = true; });
+    nav.classList.toggle('dark', dark);
+    bar.classList.toggle('dark', dark);
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, { threshold: 0.07, rootMargin: '0px 0px -44px 0px' });
+  document.querySelectorAll('.rv, .rv-l, .rv-r').forEach(el => obs.observe(el));
+
+  // Logo animation
+  function mmDur() { return (60/mmBpm)*4; }
+  function mmSetDur(b) { mmBpm=b; document.documentElement.style.setProperty('--logo-dur', mmDur()+'s'); }
+  function mmClear() { logo.classList.remove('mm-intro','mm-loop','mm-slow'); void logo.offsetWidth; }
+  function mmSet(s) {
+    if (mmState===s) return;
+    clearTimeout(mmStopTimer); clearTimeout(mmDriftTimer);
+    mmState=s; mmClear();
+    if (s==='intro') { logo.classList.add('mm-intro'); mmStopTimer=setTimeout(()=>mmSet('idle'), mmDur()*1000); }
+    else if (s==='loop') { logo.classList.add('mm-loop'); mmDriftTimer=setTimeout(mmDrift, 2500+Math.random()*2000); }
+    else if (s==='slow') { logo.classList.add('mm-slow'); mmStopTimer=setTimeout(()=>mmSet('idle'), mmDur()*1700); }
+  }
+  function mmDrift() {
+    if (mmState!=='loop') return;
+    const n = Math.round(Math.min(140, Math.max(120, mmBpm+(Math.random()-.5)*6)));
+    mmSetDur(n); logo.classList.remove('mm-loop'); void logo.offsetWidth; logo.classList.add('mm-loop');
+    mmDriftTimer = setTimeout(mmDrift, 2000+Math.random()*2500);
+  }
+  mmSetDur(130);
+  window.addEventListener('load', () => setTimeout(()=>mmSet('intro'), 800));
+  window.addEventListener('scroll', () => {
+    scrollActive=true; if (mmState==='idle'||mmState==='slow') mmSet('loop');
+    clearTimeout(scrollDebounce);
+    scrollDebounce=setTimeout(()=>{ scrollActive=false; if (mmState==='loop'&&!hoverActive) mmSet('slow'); }, 750);
+  }, { passive:true });
+  logo.addEventListener('mouseenter', () => { hoverActive=true; if (mmState!=='loop') mmSet('loop'); });
+  logo.addEventListener('mouseleave', () => { hoverActive=false; if (mmState==='loop'&&!scrollActive) mmSet('slow'); });
+})();
+</script>
+</body>
+</html>
