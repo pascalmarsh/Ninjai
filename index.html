@@ -868,7 +868,7 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
     <li><a href="#history">History</a></li>
     <li><a href="#open">Open Source</a></li>
   </ul>
-  <button class="nav-cta" id="nav-cta" onclick="window.location='shop.html'">Order Now</button>
+  <button class="nav-cta" id="nav-cta" onclick="document.getElementById('models').scrollIntoView({behavior:'smooth'})">Order Now</button>
   <button class="nav-burger" id="burger" aria-label="Open menu">
     <span></span><span></span><span></span>
   </button>
@@ -892,23 +892,23 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
   <h1 class="hero-title">The home hub,<br><em>reimagined.</em></h1>
   <p class="hero-sub">A sculptural object that thinks like a system. Screenless. Open. Yours.</p>
   <div class="hero-actions">
-    <button class="btn-primary" onclick="window.location='shop.html'">Explore Models</button>
+    <button class="btn-primary" onclick="document.getElementById('models').scrollIntoView({behavior:'smooth'})">Explore Models</button>
     <button class="btn-ghost" onclick="document.getElementById('film').scrollIntoView({behavior:'smooth'})">Watch Film</button>
   </div>
   <!-- HERO CAROUSEL -->
   <div class="hero-carousel" id="heroCarousel">
     <div class="carousel-track" id="carouselTrack">
       <div class="carousel-slide active" id="slide0">
-        <img src="ninjai-room-3.jpeg" alt="Ninjai in context">
+        <img src="images/ninjai-room-3.jpeg" alt="Ninjai in context">
       </div>
       <div class="carousel-slide" id="slide1">
-        <img src="ninjai-glow-2.jpeg" alt="Ninjai glowing warm">
+        <img src="images/ninjai-glow-2.jpeg" alt="Ninjai glowing warm">
       </div>
       <div class="carousel-slide" id="slide2">
-        <img src="ninjai-table-lit.jpeg" alt="Ninjai on side table">
+        <img src="images/ninjai-table-lit.jpeg" alt="Ninjai on side table">
       </div>
       <div class="carousel-slide" id="slide3">
-        <img src="ninjai-real.jpeg" alt="Ninjai Klein Blue edition">
+        <img src="images/ninjai-real.jpeg" alt="Ninjai Klein Blue edition">
       </div>
       <div class="carousel-progress" id="cProgress"></div>
       <div class="carousel-arrows">
@@ -936,7 +936,7 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
   <div class="video-frame rv d2" id="videoFrame">
     <!-- Poster / placeholder -->
     <div class="video-poster" id="videoPoster">
-      <img src="ninjai-glow-1.jpeg" alt="Ninjai product film">
+      <img src="images/ninjai-glow-1.jpeg" alt="Ninjai product film">
       <div class="video-poster-overlay">
         <button class="video-play-btn" id="videoPlayBtn">
           <div class="play-tri"></div>
@@ -1244,7 +1244,7 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
     <div class="tl-event" data-tl>
       <div class="tl-left">
         <div class="tl-card">
-          <img class="tl-img" src="ninjai-table-lit.jpeg" alt="Ninjai on side table">
+          <img class="tl-img" src="images/ninjai-table-lit.jpeg" alt="Ninjai on side table">
           <div class="tl-title">Finding its table.</div>
           <p class="tl-body">Testing placement on a wire side table. The close-up shade detail — lit from within — reveals the full depth of the origami fold geometry. Each pleat a deliberate decision.</p>
         </div>
@@ -1265,7 +1265,7 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
       </div>
       <div class="tl-right">
         <div class="tl-card">
-          <img class="tl-img" src="ninjai-glow-1.jpeg" alt="Ninjai dramatic glow">
+          <img class="tl-img" src="images/ninjai-glow-1.jpeg" alt="Ninjai dramatic glow">
           <div class="tl-title">The glow.</div>
           <p class="tl-body">Low light, warm room. The lamp becomes the room's anchor — not just a light source but a presence. This is what Ninjai is for: setting the atmosphere, not just the scene.</p>
         </div>
@@ -1276,7 +1276,7 @@ footer { padding: 26px 40px; border-top: 1px solid rgba(0,0,0,0.07); display: fl
     <div class="tl-event" data-tl>
       <div class="tl-left">
         <div class="tl-card">
-          <img class="tl-img" src="ninjai-real.jpeg" alt="Ninjai Klein Blue edition">
+          <img class="tl-img" src="images/ninjai-real.jpeg" alt="Ninjai Klein Blue edition">
           <div class="tl-title">International Klein Blue.</div>
           <p class="tl-body">The decision to paint the base in IKB — Yves Klein's registered pigment — transforms it from prototype to object. The ceramic absorbs the colour like nothing else. The Ninjai identity crystallises.</p>
         </div>
