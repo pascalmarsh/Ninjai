@@ -1341,109 +1341,97 @@ footer {
   logo.addEventListener('mouseleave', () => { hoverActive=false; if (mmState==='loop'&&!scrollActive) mmSet('slow'); });
   /* ── EXPLODED ISOMETRIC SCROLL ─────────────────────── */
   (function() {
-    const wrap    = document.getElementById('explodedWrap');
-    const sticky  = document.getElementById('explodedSticky');
-    const svg     = document.getElementById('explodedSvg');
-    const dots    = document.querySelectorAll('.ex-dot');
-    const steps   = document.querySelectorAll('.callout-step');
-    const hint    = document.getElementById('exScrollHint');
+    const wrap   = document.getElementById('explodedWrap');
+    const dots   = Array.from(document.querySelectorAll('.ex-dot'));
+    const steps  = Array.from(document.querySelectorAll('.callout-step'));
+    const hint   = document.getElementById('exScrollHint');
+    const compIds = ['comp-shade','comp-neck','comp-electronics','comp-body','comp-driver','comp-pr','comp-ports'];
+    const compEls = compIds.map(id => document.getElementById(id));
+    const STEPS   = 7;
+
+    // Exploded Y offsets — how far each component floats up when revealed
+    const explodeOffsets = [-80, -55, -30, 0, 0, 0, 0];
+
     if (!wrap) return;
 
-    // Component groups and their exploded offsets
-    // Each step reveals one component by translating it to its exploded position
-    const TOTAL_STEPS = 7;
-
-    // Define exploded Y offsets for each component at each step
-    // [step0_offset, step1_offset, ...] — how far component floats up
-    const components = [
-      { id: 'comp-shade',       baseY:   0, explodeY: -80  },
-      { id: 'comp-neck',        baseY:   0, explodeY: -55  },
-      { id: 'comp-electronics', baseY:   0, explodeY: -30  },
-      { id: 'comp-body',        baseY:   0, explodeY:   0  },
-      { id: 'comp-driver',      baseY:   0, explodeY:   0  },
-      { id: 'comp-pr',          baseY:   0, explodeY:   0  },
-      { id: 'comp-ports',       baseY:   0, explodeY:   0  },
-    ];
-
-    const compEls = components.map(c => document.getElementById(c.id));
+    let lastStep = -1;
 
     function lerp(a, b, t) { return a + (b - a) * Math.max(0, Math.min(1, t)); }
 
-    function onScroll() {
-      if (!wrap) return;
-      const rect    = wrap.getBoundingClientRect();
-      const total   = wrap.offsetHeight - window.innerHeight;
-      const scrolled = -rect.top;
-      const progress = Math.max(0, Math.min(1, scrolled / total));
-      const stepF   = progress * (TOTAL_STEPS - 1);
-      const stepI   = Math.floor(stepF);
-      const stepFrac = stepF - stepI;
+    function update() {
+      // How far user has scrolled INTO this section
+      const wrapTop    = wrap.offsetTop;
+      const wrapHeight = wrap.offsetHeight;
+      const scrollY    = window.scrollY;
+      const viewH      = window.innerHeight;
 
-      // Update active step
+      // Progress: 0 when section top hits viewport top, 1 when section bottom hits viewport bottom
+      const scrolled  = scrollY - wrapTop;
+      const scrollable = wrapHeight - viewH;
+      if (scrollable <= 0) return;
+
+      const progress = Math.max(0, Math.min(1, scrolled / scrollable));
+      const stepF    = progress * (STEPS - 1);
       const activeStep = Math.round(stepF);
+
+      // Hide scroll hint after scrolling starts
+      if (scrolled > 80) {
+        if (hint) hint.style.opacity = '0';
+      } else {
+        if (hint) hint.style.opacity = '1';
+      }
+
+      // Update dots
       dots.forEach((d, i) => d.classList.toggle('active', i === activeStep));
-      steps.forEach((s, i) => s.classList.toggle('visible', i === activeStep));
 
-      // Hide scroll hint after user starts scrolling
-      if (scrolled > 50) hint.style.opacity = '0';
-      else hint.style.opacity = '1';
+      // Update callout steps — only show active
+      if (activeStep !== lastStep) {
+        steps.forEach((s, i) => s.classList.toggle('visible', i === activeStep));
+        lastStep = activeStep;
+      }
 
-      // Animate each component
-      // As user scrolls through step N, component N floats up to exploded position
-      // All previously-stepped components stay at exploded
-      // Component N+1 onwards stay at base (not yet revealed)
-
+      // Animate component positions
       compEls.forEach((el, i) => {
         if (!el) return;
-        const comp = components[i];
 
-        // Step threshold for this component: it starts moving at step i
-        const compStep = i;
-        let t = 0;
-        if (stepF >= compStep + 1) {
-          t = 1; // fully exploded
-        } else if (stepF >= compStep) {
-          t = stepF - compStep; // transitioning
-        } else {
-          t = 0; // not yet
-        }
+        // Component i starts animating at step i, completes by step i+1
+        const t = Math.max(0, Math.min(1, stepF - i + 1));
+        const ty = lerp(0, explodeOffsets[i], t);
 
-        const ty = lerp(0, comp.explodeY, t);
+        // Opacity: fade in as step approaches, always visible once past
+        const opacity = i === 0 ? 1 : Math.min(1, Math.max(0.12, (stepF - i + 1.5) * 0.8));
 
-        // Also fade in when first revealed
-        const opacity = compStep === 0 ? 1 : Math.min(1, (stepF - (compStep - 0.5)) * 2);
         el.style.transform = `translateY(${ty}px)`;
-        el.style.opacity   = Math.max(0.15, opacity).toString();
+        el.style.opacity   = opacity.toFixed(2);
 
-        // Highlight active component
-        const isActive = (activeStep === compStep);
-        const lineEls  = el.querySelectorAll('.bp-callout-line');
-        const labelEls = el.querySelectorAll('.bp-label');
-        lineEls.forEach(l => {
-          l.style.stroke = isActive ? 'rgba(74,122,255,0.8)' : 'rgba(74,122,255,0.35)';
+        // Highlight callout lines for active component
+        const isActive = activeStep === i;
+        el.querySelectorAll('.bp-callout-line').forEach(l => {
+          l.style.stroke  = isActive ? 'rgba(74,122,255,0.9)' : 'rgba(74,122,255,0.3)';
         });
-        labelEls.forEach(l => {
-          l.style.fill = isActive ? 'rgba(74,122,255,0.9)' : 'rgba(74,122,255,0.45)';
+        el.querySelectorAll('.bp-label').forEach(l => {
+          l.style.fill = isActive ? 'rgba(74,122,255,1)' : 'rgba(74,122,255,0.45)';
+          if (isActive) l.style.fontWeight = '500';
+          else l.style.fontWeight = '';
         });
       });
-
-      // Pulse wave field opacity with scroll
-      const wf = document.getElementById('wave-field');
-      if (wf) {
-        const wfOpacity = 0.05 + (Math.sin(progress * Math.PI * 4) + 1) * 0.04;
-        wf.style.opacity = wfOpacity.toString();
-      }
-
-      // Dark nav when in exploded section
-      const secRect = document.getElementById('exploded').getBoundingClientRect();
-      if (secRect.top < 0 && secRect.bottom > 0) {
-        document.getElementById('nav').classList.add('dark');
-        document.getElementById('brand-bar').classList.add('dark');
-      }
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll(); // init
+    // Dot click navigation — jump to step
+    dots.forEach((d, i) => {
+      d.addEventListener('click', () => {
+        const wrapTop    = wrap.offsetTop;
+        const wrapHeight = wrap.offsetHeight;
+        const viewH      = window.innerHeight;
+        const scrollable = wrapHeight - viewH;
+        const targetScroll = wrapTop + (i / (STEPS - 1)) * scrollable;
+        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+      });
+    });
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
   })();
 </body>
 </html>
